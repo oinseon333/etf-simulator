@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미국 ETF 장기투자 시뮬레이터 | VOO QQQ SPY 배당재투자 수익률 계산기</title>
+<meta name="description" content="VOO, QQQ, SPY 등 미국 ETF의 과거 수익률 + 배당재투자 복리 데이터 기반으로 10·20·30·40년 후 수익을 시뮬레이션하세요.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-soft: #eef0ff;
+  --green: #10b981;
+  --green-soft: #d1fae5;
+  --orange: #f59e0b;
+  --orange-soft: #fef3c7;
+  --pink: #ec4899;
+  --pink-soft: #fce7f3;
+  --text: #1e1b4b;
+  --text2: #4b5563;
+  --text3: #9ca3af;
+  --border: #e0e7ff;
+  --shadow: 0 4px 24px rgba(99,102,241,0.10);
+  --shadow-lg: 0 8px 40px rgba(99,102,241,0.16);
+  --radius: 20px;
+  --radius-sm: 14px;
+}
+
+- { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘Noto Sans KR’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+body::before {
+content:’’;
+position:fixed; inset:0;
+background:
+radial-gradient(circle at 10% 15%, rgba(99,102,241,0.09) 0%, transparent 40%),
+radial-gradient(circle at 88% 80%, rgba(236,72,153,0.07) 0%, transparent 40%),
+radial-gradient(circle at 50% 50%, rgba(16,185,129,0.05) 0%, transparent 60%);
+pointer-events:none; z-index:0;
+}
+
+.wrap {
+max-width: 900px;
+margin: 0 auto;
+padding: 0 20px 60px;
+position: relative; z-index:1;
+}
+
+/* ── 헤더 ── */
+header {
+text-align: center;
+padding: 48px 0 36px;
+}
+
+.header-emoji {
+font-size: 56px;
+display: block;
+margin-bottom: 10px;
+animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+0%,100%{ transform:translateY(0); }
+50%{ transform:translateY(-8px); }
+}
+
+h1 {
+font-family: ‘Nunito’, sans-serif;
+font-size: clamp(26px, 5.5vw, 50px);
+font-weight: 900;
+color: var(–primary);
+line-height: 1.15;
+margin-bottom: 8px;
+}
+
+.subtitle {
+font-size: 14px;
+color: var(–text2);
+margin-bottom: 18px;
+}
+
+.header-tags {
+display: flex;
+gap: 7px;
+justify-content: center;
+flex-wrap: wrap;
+}
+
+.tag {
+background: var(–white);
+border: 2px solid var(–border);
+border-radius: 999px;
+padding: 4px 13px;
+font-size: 12px;
+font-weight: 800;
+color: var(–primary);
+font-family: ‘Nunito’, sans-serif;
+}
+
+.tag.special {
+background: var(–orange-soft);
+border-color: #fbbf24;
+color: var(–orange);
+}
+
+/* ── 광고 배너 ── */
+.ad-banner {
+background: var(–white);
+border: 2px dashed var(–border);
+border-radius: var(–radius-sm);
+height: 80px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(–text3);
+font-size: 12px;
+margin-bottom: 24px;
+}
+
+/* ── 카드 ── */
+.card {
+background: var(–white);
+border-radius: var(–radius);
+box-shadow: var(–shadow);
+padding: 26px;
+margin-bottom: 18px;
+}
+
+.card-title {
+display: flex;
+align-items: center;
+gap: 9px;
+font-family: ‘Nunito’, sans-serif;
+font-size: 16px;
+font-weight: 900;
+color: var(–text);
+margin-bottom: 20px;
+}
+
+.step-badge {
+background: linear-gradient(135deg, var(–primary), var(–primary-light));
+color: #fff;
+border-radius: 999px;
+width: 28px; height: 28px;
+display: flex; align-items:center; justify-content:center;
+font-size: 13px;
+font-weight: 900;
+flex-shrink: 0;
+box-shadow: 0 3px 10px rgba(99,102,241,0.3);
+}
+
+/* ── ETF 버튼 ── */
+.etf-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 10px;
+margin-bottom: 16px;
+}
+
+@media(max-width:560px){ .etf-grid{ grid-template-columns:repeat(2,1fr); } }
+
+.etf-btn {
+background: var(–bg);
+border: 2px solid var(–border);
+border-radius: var(–radius-sm);
+padding: 14px 10px;
+cursor: pointer;
+transition: all .18s;
+text-align: center;
+position: relative;
+}
+
+.etf-btn:hover {
+border-color: var(–primary-light);
+transform: translateY(-2px);
+box-shadow: 0 5px 18px rgba(99,102,241,0.13);
+}
+
+.etf-btn.active {
+background: var(–primary-soft);
+border-color: var(–primary);
+box-shadow: 0 4px 18px rgba(99,102,241,0.2);
+}
+
+.etf-btn.active::after {
+content:‘✓’;
+position:absolute; top:7px; right:9px;
+font-size:12px; color:var(–primary); font-weight:900;
+}
+
+.etf-ticker {
+font-family: ‘Nunito’, sans-serif;
+font-size: 20px;
+font-weight: 900;
+color: var(–primary);
+display: block;
+margin-bottom: 3px;
+}
+
+.etf-desc {
+font-size: 10px;
+color: var(–text3);
+margin-bottom: 7px;
+line-height: 1.4;
+}
+
+.etf-cagr {
+display: inline-block;
+background: var(–green-soft);
+color: var(–green);
+border-radius: 999px;
+font-size: 11px;
+font-weight: 800;
+padding: 2px 9px;
+font-family: ‘Nunito’, sans-serif;
+}
+
+/* ETF 정보 박스 */
+.etf-info-box {
+background: var(–primary-soft);
+border-radius: var(–radius-sm);
+padding: 16px 18px;
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 12px;
+}
+
+@media(max-width:560px){ .etf-info-box{ grid-template-columns:repeat(2,1fr); } }
+
+.info-item .ik { font-size:10px; color:var(–text3); margin-bottom:3px; }
+.info-item .iv { font-size:14px; font-weight:800; color:var(–primary); font-family:‘Nunito’,sans-serif; }
+
+/* ── DRIP 안내 박스 ── */
+.drip-box {
+background: linear-gradient(135deg, #fffbeb 0%, #fdf2f8 100%);
+border: 2px solid #fbbf24;
+border-radius: var(–radius);
+padding: 20px;
+margin-bottom: 18px;
+display: flex;
+gap: 14px;
+align-items: flex-start;
+}
+
+.drip-icon { font-size:32px; flex-shrink:0; margin-top:2px; }
+
+.drip-text { font-size:13px; color:var(–text2); line-height:1.8; }
+.drip-text strong { color: #d97706; font-weight:800; }
+.drip-text .drip-highlight {
+display: inline-block;
+background: var(–orange-soft);
+border-radius: 6px;
+padding: 1px 7px;
+font-weight: 800;
+color: var(–orange);
+}
+
+/* ── 입력 그리드 ── */
+.input-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 14px;
+}
+@media(max-width:560px){ .input-grid{ grid-template-columns:1fr; } }
+
+.inp-group {
+background: var(–bg);
+border: 2px solid var(–border);
+border-radius: var(–radius-sm);
+padding: 16px;
+transition: border-color .18s, background .18s;
+}
+
+.inp-group:focus-within {
+border-color: var(–primary-light);
+background: var(–white);
+}
+
+.inp-group.locked {
+background: var(–green-soft);
+border-color: #6ee7b7;
+}
+
+.inp-group.locked-orange {
+background: var(–orange-soft);
+border-color: #fbbf24;
+}
+
+.inp-label {
+font-size: 11px;
+font-weight: 700;
+color: var(–text3);
+margin-bottom: 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 6px;
+}
+
+.lk-badge {
+border-radius: 999px;
+font-size: 10px;
+font-weight: 800;
+padding: 2px 8px;
+white-space: nowrap;
+font-family: ‘Nunito’, sans-serif;
+}
+
+.lk-green { background: var(–green); color:#fff; }
+.lk-orange { background: var(–orange); color:#fff; }
+.lk-gray { background: var(–text3); color:#fff; }
+
+.inp-row {
+display: flex;
+align-items: baseline;
+gap: 4px;
+}
+
+.inp-prefix {
+font-size:17px; font-weight:700; color:var(–text3);
+}
+
+input[type=number] {
+background: transparent;
+border: none; outline: none;
+font-family: ‘Nunito’, sans-serif;
+font-size: 26px;
+font-weight: 900;
+color: var(–text);
+width: 100%;
+-moz-appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
+input[readonly] { cursor:not-allowed; color: var(–green); }
+input[readonly].orange-val { color: var(–orange); }
+
+.inp-sub {
+font-size: 10px;
+color: var(–text3);
+margin-top: 6px;
+line-height: 1.7;
+}
+
+.slider-wrap { margin-top:8px; }
+input[type=range] {
+width:100%; -webkit-appearance:none;
+height:4px; border-radius:2px;
+background:var(–border); outline:none; cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+-webkit-appearance:none;
+width:18px; height:18px; border-radius:50%;
+background:var(–primary);
+border:3px solid #fff;
+box-shadow:0 2px 8px rgba(99,102,241,0.28);
+}
+.slider-labels {
+display:flex; justify-content:space-between;
+font-size:9px; color:var(–text3);
+margin-top:4px; font-weight:700;
+}
+
+/* ── 실행 버튼 ── */
+.calc-btn {
+width:100%; padding:18px;
+background: linear-gradient(135deg, var(–primary) 0%, var(–pink) 100%);
+border:none; border-radius:var(–radius);
+color:#fff;
+font-family:‘Nunito’,sans-serif;
+font-size:18px; font-weight:900;
+letter-spacing:.5px;
+cursor:pointer;
+transition:all .2s;
+box-shadow:0 6px 24px rgba(99,102,241,0.3);
+margin-bottom:28px;
+}
+.calc-btn:hover { transform:translateY(-3px); box-shadow:0 12px 32px rgba(99,102,241,0.38); }
+.calc-btn:active { transform:translateY(0); }
+
+/* ── 결과 영역 ── */
+.results-section { display:none; }
+.results-section.visible { display:block; animation: fadeUp .45s ease; }
+@keyframes fadeUp {
+from{ opacity:0; transform:translateY(14px); }
+to{ opacity:1; transform:translateY(0); }
+}
+
+/* 탭 */
+.compare-tabs {
+display:flex; gap:8px; margin-bottom:16px;
+background:var(–white);
+padding:6px; border-radius:var(–radius-sm);
+box-shadow:var(–shadow);
+}
+.ctab {
+flex:1; padding:10px 6px;
+border:none; border-radius:10px;
+font-family:‘Nunito’,sans-serif;
+font-size:12px; font-weight:800;
+cursor:pointer; transition:all .18s;
+background:transparent; color:var(–text3);
+line-height:1.3;
+}
+.ctab.active {
+background: linear-gradient(135deg, var(–primary), var(–primary-light));
+color:#fff;
+box-shadow:0 3px 14px rgba(99,102,241,0.28);
+}
+
+/* 결과 카드 */
+.results-grid {
+display:grid; grid-template-columns:repeat(2,1fr);
+gap:14px; margin-bottom:18px;
+}
+@media(max-width:560px){ .results-grid{ grid-template-columns:1fr; } }
+
+.result-card {
+background:var(–white);
+border-radius:var(–radius);
+padding:22px;
+box-shadow:var(–shadow);
+position:relative; overflow:hidden;
+transition:transform .18s, box-shadow .18s;
+}
+.result-card:hover { transform:translateY(-3px); box-shadow:var(–shadow-lg); }
+
+.result-card::before {
+content:’’;
+position:absolute; top:0; left:0; right:0;
+height:5px; border-radius:var(–radius) var(–radius) 0 0;
+}
+.result-card.y10::before { background:linear-gradient(90deg,#6366f1,#a5b4fc); }
+.result-card.y20::before { background:linear-gradient(90deg,#10b981,#6ee7b7); }
+.result-card.y30::before { background:linear-gradient(90deg,#f59e0b,#fde68a); }
+.result-card.y40::before { background:linear-gradient(90deg,#ec4899,#f9a8d4); }
+
+.ry-badge {
+display:inline-flex; align-items:center; gap:5px;
+border-radius:999px; padding:5px 13px;
+font-family:‘Nunito’,sans-serif;
+font-size:13px; font-weight:800;
+margin-bottom:12px;
+}
+.y10 .ry-badge { background:#eef0ff; color:var(–primary); }
+.y20 .ry-badge { background:var(–green-soft); color:var(–green); }
+.y30 .ry-badge { background:var(–orange-soft); color:var(–orange); }
+.y40 .ry-badge { background:var(–pink-soft); color:var(–pink); }
+
+.r-amount {
+font-family:‘Nunito’,sans-serif;
+font-size:clamp(22px,4vw,30px); font-weight:900;
+color:var(–text); margin-bottom:3px; line-height:1.1;
+}
+
+.r-invested {
+font-size:11px; color:var(–text3); margin-bottom:10px;
+}
+
+.r-divider { height:1px; background:var(–bg); margin:10px 0; }
+
+.r-row {
+display:flex; justify-content:space-between; align-items:center;
+font-size:12px; margin-bottom:6px;
+}
+.r-row .rk { color:var(–text3); }
+.r-row .rv { font-family:‘Nunito’,sans-serif; font-weight:800; font-size:13px; }
+.rv-green { color:var(–green); }
+.rv-orange { color:var(–orange); }
+.rv-pink { color:var(–pink); }
+.rv-primary { color:var(–primary); }
+
+.rate-badge {
+border-radius:999px; padding:3px 10px;
+font-size:11px; font-weight:800;
+font-family:‘Nunito’,sans-serif;
+}
+.y10 .rate-badge { background:#eef0ff; color:var(–primary); }
+.y20 .rate-badge { background:var(–green-soft); color:var(–green); }
+.y30 .rate-badge { background:var(–orange-soft); color:var(–orange); }
+.y40 .rate-badge { background:var(–pink-soft); color:var(–pink); }
+
+/* 차트 */
+.chart-card {
+background:var(–white); border-radius:var(–radius);
+box-shadow:var(–shadow); padding:24px; margin-bottom:18px;
+}
+.chart-title {
+font-family:‘Nunito’,sans-serif; font-size:15px; font-weight:900;
+color:var(–text); margin-bottom:18px;
+display:flex; align-items:center; gap:7px;
+}
+canvas { width:100%!important; max-height:260px; }
+
+/* 면책 */
+.disclaimer {
+background:#fff7ed; border:2px solid #fed7aa;
+border-radius:var(–radius-sm);
+padding:16px 20px; font-size:12px;
+color:var(–text2); line-height:1.9; margin-bottom:24px;
+}
+.disclaimer .dtitle {
+font-weight:900; color:#ea580c;
+font-family:‘Nunito’,sans-serif; font-size:14px; margin-bottom:6px;
+}
+
+footer {
+text-align:center; padding:28px 0 10px;
+font-size:12px; color:var(–text3); line-height:2.2;
+border-top:2px solid var(–border);
+}
+footer strong { color:var(–primary); font-family:‘Nunito’,sans-serif; font-weight:800; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="header-emoji">📈</span>
+    <h1>미국 ETF 투자 시뮬레이터</h1>
+    <p class="subtitle">과거 수익률 + 배당재투자(DRIP) 복리 기반 장기 수익 시뮬레이션</p>
+    <div class="header-tags">
+      <span class="tag">VOO</span>
+      <span class="tag">QQQ</span>
+      <span class="tag">SPY</span>
+      <span class="tag">SCHD</span>
+      <span class="tag">VTI</span>
+      <span class="tag">IVV</span>
+      <span class="tag special">💰 배당재투자(DRIP)</span>
+    </div>
+  </header>
+
+  <div class="ad-banner">
+    <!-- Google AdSense 코드 삽입 위치 -->
+    <span>[ 광고 영역 — Google AdSense ]</span>
+  </div>
+
+  <!-- STEP 1 -->
+
+  <div class="card">
+    <div class="card-title">
+      <span class="step-badge">1</span> ETF 선택
+    </div>
+    <div class="etf-grid" id="etfGrid"></div>
+    <div class="etf-info-box" id="etfInfoBox"></div>
+  </div>
+
+  <!-- DRIP 안내 -->
+
+  <div class="drip-box">
+    <div class="drip-icon">💰</div>
+    <div class="drip-text">
+      <strong>배당재투자(DRIP)란?</strong><br>
+      ETF가 지급하는 배당금을 현금으로 받지 않고 <span class="drip-highlight">즉시 동일 ETF에 재투자</span>하는 방식이에요.
+      배당금이 다시 원금이 되어 <strong>복리 효과가 극대화</strong>됩니다.<br>
+      예: SCHD(배당률 3.5%) 30년 보유 시, DRIP 적용만으로 수억 원의 추가 수익 발생 가능!<br>
+      본 시뮬레이터는 <strong>배당 미재투자(주가 상승분만)</strong>와 <strong>배당재투자 DRIP 복리</strong> 두 가지를 동시 계산해 비교합니다.
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+
+  <div class="card">
+    <div class="card-title">
+      <span class="step-badge">2</span> 투자 조건 설정
+    </div>
+    <div class="input-grid">
+
+```
+  <div class="inp-group">
+    <div class="inp-label">월 적립 금액 <span>KRW</span></div>
+    <div class="inp-row">
+      <span class="inp-prefix">₩</span>
+      <input type="number" id="monthly" value="500000" min="10000" step="10000">
+    </div>
+    <div class="slider-wrap">
+      <input type="range" id="monthlySlider" min="100000" max="5000000" step="100000" value="500000">
+      <div class="slider-labels"><span>10만</span><span>100만</span><span>300만</span><span>500만</span></div>
+    </div>
+  </div>
+
+  <div class="inp-group">
+    <div class="inp-label">초기 투자금 (선택) <span>KRW</span></div>
+    <div class="inp-row">
+      <span class="inp-prefix">₩</span>
+      <input type="number" id="initial" value="0" min="0" step="100000">
+    </div>
+    <div class="slider-wrap">
+      <input type="range" id="initialSlider" min="0" max="50000000" step="500000" value="0">
+      <div class="slider-labels"><span>0</span><span>500만</span><span>1천만</span><span>5천만</span></div>
+    </div>
+  </div>
+
+  <div class="inp-group locked" id="exchangeGroup">
+    <div class="inp-label">
+      실시간 환율 (USD/KRW)
+      <span class="lk-badge lk-gray" id="exchangeBadge">조회중...</span>
+    </div>
+    <div class="inp-row">
+      <span class="inp-prefix">₩</span>
+      <input type="number" id="exchange" value="1380" readonly>
+    </div>
+    <div class="inp-sub" id="exchangeMeta">환율 조회 중입니다...</div>
+  </div>
+
+  <div class="inp-group locked-orange">
+    <div class="inp-label">
+      해외 ETF 양도소득세
+      <span class="lk-badge lk-orange">고정</span>
+    </div>
+    <div class="inp-row">
+      <input type="number" id="tax" value="22" readonly class="orange-val">
+      <span class="inp-prefix">%</span>
+    </div>
+    <div class="inp-sub">
+      수익 250만원 초과분 × <strong style="color:var(--orange)">22%</strong> (소득세 20% + 지방세 2%)<br>
+      <span style="color:#d1d5db">※ 배당소득세 15.4%는 별도 부과</span>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+<button class="calc-btn" onclick="calculate()">🚀 시뮬레이션 시작!</button>
+
+  <!-- 결과 -->
+
+  <div class="results-section" id="results">
+
+```
+<div class="compare-tabs">
+  <button class="ctab active" onclick="switchTab('drip')" id="tab-drip">💰 배당재투자<br>(DRIP 복리)</button>
+  <button class="ctab" onclick="switchTab('nodiv')" id="tab-nodiv">📊 배당 미재투자<br>(주가 상승만)</button>
+  <button class="ctab" onclick="switchTab('diff')" id="tab-diff">⚡ DRIP 추가수익<br>(차이 비교)</button>
+</div>
+
+<div id="panel-drip"><div id="grid-drip"></div></div>
+<div id="panel-nodiv" style="display:none"><div id="grid-nodiv"></div></div>
+<div id="panel-diff" style="display:none"><div id="grid-diff"></div></div>
+
+<div class="chart-card">
+  <div class="chart-title">📉 연도별 자산 성장 추이 (세전 기준)</div>
+  <canvas id="growthChart"></canvas>
+</div>
+
+<div class="ad-banner">
+  <span>[ 광고 영역 — Google AdSense ]</span>
+</div>
+
+<div class="disclaimer">
+  <div class="dtitle">⚠️ 투자 유의사항</div>
+  본 시뮬레이터는 과거 수익률 데이터를 기반으로 한 <strong>참고용 계산기</strong>로, 투자를 권유하지 않습니다.
+  과거 수익률이 미래 수익을 보장하지 않으며, 환율 변동·세제 변경·시장 하락 등 다양한 변수로 실제 수익은 크게 달라질 수 있습니다.
+  배당재투자(DRIP) 계산은 <strong>배당이 매월 균등 지급·즉시 재투자된다는 가정</strong> 하에 산출된 추정치입니다.
+  투자 결정은 본인 책임 하에 신중하게 판단하시기 바랍니다.
+</div>
+```
+
+  </div>
+
+  <footer>
+    <strong>📈 미국 ETF 투자 시뮬레이터</strong><br>
+    과거 수익률 + 배당재투자(DRIP) 복리 기반 · 투자 권유 아님<br>
+    © 2024 · 정보 제공 목적으로만 제작된 서비스입니다
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<script>
+// ── ETF 데이터 (실제 역사적 데이터 기반) ──
+const ETF_DATA = {
+  VOO:  { name:'Vanguard S&P 500 ETF',      index:'S&P 500',         cagr:10.7, divYield:1.3, period:'2010~현재', ter:'0.03%', emoji:'🏛️', desc:'S&P500 대형주 500개' },
+  QQQ:  { name:'Invesco QQQ Trust',          index:'NASDAQ-100',      cagr:14.1, divYield:0.6, period:'1999~현재', ter:'0.20%', emoji:'💻', desc:'나스닥 100대 기술주' },
+  SPY:  { name:'SPDR S&P 500 ETF',           index:'S&P 500',         cagr:10.5, divYield:1.3, period:'1993~현재', ter:'0.09%', emoji:'🦅', desc:'세계 최대·최초 ETF' },
+  SCHD: { name:'Schwab US Dividend ETF',     index:'DJ Dividend 100', cagr:12.8, divYield:3.5, period:'2011~현재', ter:'0.06%', emoji:'💎', desc:'고배당 성장주 혼합' },
+  VTI:  { name:'Vanguard Total Market ETF',  index:'CRSP US Total',   cagr:10.4, divYield:1.4, period:'2001~현재', ter:'0.03%', emoji:'🌎', desc:'미국 전체 주식시장' },
+  IVV:  { name:'iShares Core S&P 500 ETF',   index:'S&P 500',         cagr:10.6, divYield:1.3, period:'2000~현재', ter:'0.03%', emoji:'🔷', desc:'블랙록 S&P500 추종' },
+};
+
+let selectedETF = 'VOO';
+let chartInstance = null;
+
+// ── ETF 카드 ──
+function renderETFCards() {
+  const grid = document.getElementById('etfGrid');
+  grid.innerHTML = '';
+  Object.entries(ETF_DATA).forEach(([ticker, d]) => {
+    const btn = document.createElement('div');
+    btn.className = 'etf-btn' + (ticker === selectedETF ? ' active' : '');
+    btn.onclick = () => { selectedETF = ticker; renderETFCards(); };
+    btn.innerHTML = `
+      <span class="etf-ticker">${d.emoji} ${ticker}</span>
+      <div class="etf-desc">${d.desc}</div>
+      <span class="etf-cagr">CAGR ${d.cagr}%</span>
+    `;
+    grid.appendChild(btn);
+  });
+  updateETFInfo();
+}
+
+function updateETFInfo() {
+  const d = ETF_DATA[selectedETF];
+  const dripCagr = (d.cagr + d.divYield * 0.85).toFixed(1);
+  document.getElementById('etfInfoBox').innerHTML = `
+    <div class="info-item"><div class="ik">추종 지수</div><div class="iv">${d.index}</div></div>
+    <div class="info-item"><div class="ik">CAGR (주가 상승)</div><div class="iv" style="color:var(--green)">${d.cagr}%</div></div>
+    <div class="info-item"><div class="ik">배당 수익률</div><div class="iv" style="color:var(--orange)">${d.divYield}%</div></div>
+    <div class="info-item"><div class="ik">운용 기간</div><div class="iv">${d.period}</div></div>
+    <div class="info-item"><div class="ik">운용 보수 (TER)</div><div class="iv">${d.ter}</div></div>
+    <div class="info-item"><div class="ik">DRIP 포함 CAGR 추정</div><div class="iv" style="color:var(--primary)">${dripCagr}%</div></div>
+  `;
+}
+
+// ── 슬라이더 ──
+function syncSliders() {
+  [['monthly','monthlySlider'],['initial','initialSlider']].forEach(([id,sid]) => {
+    const inp = document.getElementById(id);
+    const sl  = document.getElementById(sid);
+    inp.addEventListener('input', () => sl.value = inp.value);
+    sl.addEventListener('input',  () => inp.value = sl.value);
+  });
+}
+
+// ── 실시간 환율 (2초 타임아웃, 4개 API 순차) ──
+async function fetchExchangeRate() {
+  const badge = document.getElementById('exchangeBadge');
+  const meta  = document.getElementById('exchangeMeta');
+  const input = document.getElementById('exchange');
+  const group = document.getElementById('exchangeGroup');
+
+  function withTimeout(p, ms) {
+    return Promise.race([p, new Promise((_,r) => setTimeout(() => r(new Error('timeout')), ms))]);
+  }
+
+  const apis = [
+    async () => {
+      const r = await fetch('https://open.er-api.com/v6/latest/USD');
+      const d = await r.json();
+      if (d.result !== 'success' || !d.rates?.KRW) throw 0;
+      return { rate: Math.round(d.rates.KRW), src:'ExchangeRate-API',
+        upd: new Date(d.time_last_update_utc).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) };
+    },
+    async () => {
+      const r = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const d = await r.json();
+      if (!d.rates?.KRW) throw 0;
+      return { rate: Math.round(d.rates.KRW), src:'ExchangeRate-API v4', upd: d.date };
+    },
+    async () => {
+      const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=KRW');
+      const d = await r.json();
+      if (!d.rates?.KRW) throw 0;
+      return { rate: Math.round(d.rates.KRW), src:'Frankfurter (ECB)', upd: d.date };
+    },
+    async () => {
+      const today = new Date().toISOString().slice(0,10);
+      const r = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${today}/v1/currencies/usd.json`);
+      const d = await r.json();
+      if (!d.usd?.krw) throw 0;
+      return { rate: Math.round(d.usd.krw), src:'Currency API (CDN)', upd: today };
+    }
+  ];
+
+  for (const api of apis) {
+    try {
+      const { rate, src, upd } = await withTimeout(api(), 2000);
+      input.value = rate;
+      badge.textContent = '✓ LIVE';
+      badge.className = 'lk-badge lk-green';
+      group.style.borderColor = '#6ee7b7';
+      meta.innerHTML = `출처: ${src} · ${upd}<br><strong style="color:var(--green)">${rate.toLocaleString()} KRW</strong> / 1 USD`;
+      return;
+    } catch (_) {}
+  }
+
+  input.value = 1380;
+  badge.textContent = '기본값';
+  badge.className = 'lk-badge lk-gray';
+  meta.innerHTML = `API 조회 실패 — 기본값 <strong>1,380 KRW</strong> 적용`;
+}
+
+// ── 계산 ──
+function simulateDrip(monthly, initial, years, taxRate) {
+  // DRIP: 전체 CAGR (주가상승 + 배당 재투자 복리)
+  const d = ETF_DATA[selectedETF];
+  const totalCagr = d.cagr + d.divYield * 0.85; // 배당세 15% 제외 후 재투자
+  const mr = totalCagr / 100 / 12;
+  let bal = initial;
+  const yearly = [initial];
+  for (let m = 1; m <= years * 12; m++) {
+    bal = bal * (1 + mr) + monthly;
+    if (m % 12 === 0) yearly.push(bal);
+  }
+  const invested = initial + monthly * years * 12;
+  const profit = Math.max(0, bal - invested);
+  const tax = profit > 2500000 ? (profit - 2500000) * (taxRate / 100) : 0;
+  return { net: bal - tax, gross: bal, invested, profit, tax, yearly };
+}
+
+function simulateNoDrip(monthly, initial, years, taxRate) {
+  // 미재투자: 주가 상승분만 복리 (배당은 재투자 안 함)
+  const d = ETF_DATA[selectedETF];
+  const priceCAGR = d.cagr; // 배당 미포함 (순수 주가)
+  const mr = priceCAGR / 100 / 12;
+  let bal = initial;
+  const yearly = [initial];
+  for (let m = 1; m <= years * 12; m++) {
+    bal = bal * (1 + mr) + monthly;
+    if (m % 12 === 0) yearly.push(bal);
+  }
+  const invested = initial + monthly * years * 12;
+  const profit = Math.max(0, bal - invested);
+  const tax = profit > 2500000 ? (profit - 2500000) * (taxRate / 100) : 0;
+  return { net: bal - tax, gross: bal, invested, profit, tax, yearly };
+}
+
+function fmt(n) {
+  if (n >= 1e8) return `${(n/1e8).toFixed(1)}억원`;
+  if (n >= 1e4) return `${Math.round(n/10000).toLocaleString()}만원`;
+  return `${Math.round(n).toLocaleString()}원`;
+}
+
+const YEARS   = [10, 20, 30, 40];
+const EMOJIS  = ['🌱','🌳','🏆','👑'];
+const YCLASSES = ['y10','y20','y30','y40'];
+
+function buildCards(dataArr, mode) {
+  const wrap = document.createElement('div');
+  wrap.className = 'results-grid';
+  dataArr.forEach((res, i) => {
+    const yr = YEARS[i];
+    const card = document.createElement('div');
+    card.className = `result-card ${YCLASSES[i]}`;
+
+    if (mode === 'diff') {
+      card.innerHTML = `
+        <div class="ry-badge">${EMOJIS[i]} ${yr}년 후 추가수익</div>
+        <div class="r-amount" style="color:var(--orange)">+${fmt(res.extra)}</div>
+        <div class="r-invested">DRIP vs 미재투자 차액 (세후)</div>
+        <div class="r-divider"></div>
+        <div class="r-row"><span class="rk">DRIP 세후 총자산</span><span class="rv rv-primary">${fmt(res.drip)}</span></div>
+        <div class="r-row"><span class="rk">미재투자 세후 총자산</span><span class="rv rv-green">${fmt(res.nodiv)}</span></div>
+        <div class="r-row"><span class="rk">DRIP 효과 배율</span><span class="rate-badge">${(res.drip / res.nodiv).toFixed(2)}배</span></div>
+      `;
+    } else {
+      const profitRate = res.invested > 0 ? ((res.net - res.invested) / res.invested * 100).toFixed(0) : 0;
+      const isDrip = mode === 'drip';
+      card.innerHTML = `
+        <div class="ry-badge">${EMOJIS[i]} ${yr}년 후</div>
+        <div class="r-amount">${fmt(res.net)}</div>
+        <div class="r-invested">납입 원금 ${fmt(res.invested)}</div>
+        <div class="r-divider"></div>
+        <div class="r-row"><span class="rk">${isDrip ? '💰 DRIP 포함 총수익' : '📊 주가상승 총수익'}</span><span class="rv rv-green">+${fmt(res.profit)}</span></div>
+        <div class="r-row"><span class="rk">양도소득세 (22%)</span><span class="rv rv-pink">-${fmt(res.tax)}</span></div>
+        ${isDrip ? `<div class="r-row"><span class="rk">배당재투자 기여분</span><span class="rv rv-orange">+${fmt(res.dripBonus)}</span></div>` : ''}
+        <div class="r-row"><span class="rk">총 수익률</span><span class="rate-badge">+${profitRate}%</span></div>
+      `;
+    }
+    wrap.appendChild(card);
+  });
+  return wrap;
+}
+
+function calculate() {
+  const monthly = Number(document.getElementById('monthly').value);
+  const initial = Number(document.getElementById('initial').value);
+  const tax     = Number(document.getElementById('tax').value);
+
+  if (!monthly || monthly < 10000) { alert('월 적립금을 10,000원 이상 입력해주세요 😊'); return; }
+
+  const dripArr  = YEARS.map(yr => simulateDrip(monthly, initial, yr, tax));
+  const nodivArr = YEARS.map(yr => simulateNoDrip(monthly, initial, yr, tax));
+
+  // DRIP 기여분 추가
+  dripArr.forEach((r, i) => { r.dripBonus = r.net - nodivArr[i].net; });
+
+  const diffArr = YEARS.map((_, i) => ({
+    extra: dripArr[i].net - nodivArr[i].net,
+    drip: dripArr[i].net,
+    nodiv: nodivArr[i].net
+  }));
+
+  // 카드 교체
+  ['drip','nodiv','diff'].forEach(id => document.getElementById(`grid-${id}`).innerHTML = '');
+  document.getElementById('grid-drip').appendChild(buildCards(dripArr, 'drip'));
+  document.getElementById('grid-nodiv').appendChild(buildCards(nodivArr, 'nodiv'));
+  document.getElementById('grid-diff').appendChild(buildCards(diffArr, 'diff'));
+
+  // 차트 — 40년치
+  const drip40  = simulateDrip(monthly, initial, 40, tax);
+  const nodiv40 = simulateNoDrip(monthly, initial, 40, tax);
+  drawChart(drip40.yearly, nodiv40.yearly, monthly, initial);
+
+  document.getElementById('results').classList.add('visible');
+  setTimeout(() => document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+}
+
+function switchTab(tab) {
+  ['drip','nodiv','diff'].forEach(t => {
+    document.getElementById(`panel-${t}`).style.display = t === tab ? 'block' : 'none';
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  });
+}
+
+function drawChart(dripY, nodivY, monthly, initial) {
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+  const labels = dripY.map((_,i) => `${i}년`);
+  const invested = dripY.map((_,i) => initial + monthly * i * 12);
+  chartInstance = new Chart(ctx, {
+    type:'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label:'💰 배당재투자 DRIP',
+          data: dripY,
+          borderColor:'#6366f1',
+          backgroundColor:'rgba(99,102,241,0.08)',
+          borderWidth:2.5, fill:true, tension:0.4, pointRadius:0, pointHoverRadius:5
+        },
+        {
+          label:'📊 배당 미재투자',
+          data: nodivY,
+          borderColor:'#10b981',
+          backgroundColor:'rgba(16,185,129,0.06)',
+          borderWidth:2, fill:true, tension:0.4, pointRadius:0, borderDash:[6,3]
+        },
+        {
+          label:'납입 원금',
+          data: invested,
+          borderColor:'#d1d5db',
+          backgroundColor:'rgba(209,213,219,0.15)',
+          borderWidth:1.5, fill:true, tension:0.4, pointRadius:0, borderDash:[3,3]
+        }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      interaction:{ mode:'index', intersect:false },
+      plugins: {
+        legend: { labels:{ color:'#4b5563', font:{family:'Nunito',size:12,weight:'700'}, boxWidth:14, padding:16 } },
+        tooltip: {
+          backgroundColor:'#fff', borderColor:'#e0e7ff', borderWidth:2,
+          titleColor:'#1e1b4b', bodyColor:'#4b5563',
+          titleFont:{family:'Nunito',size:12,weight:'800'},
+          bodyFont:{family:'Noto Sans KR',size:12},
+          padding:12,
+          callbacks:{ label: c => ` ${c.dataset.label}: ${fmt(c.parsed.y)}` }
+        }
+      },
+      scales: {
+        x:{ ticks:{color:'#9ca3af',font:{family:'Nunito',size:10,weight:'600'},maxTicksLimit:10}, grid:{color:'rgba(224,231,255,0.7)'} },
+        y:{ ticks:{color:'#9ca3af',font:{family:'Nunito',size:10,weight:'600'},callback:v=>fmt(v)}, grid:{color:'rgba(224,231,255,0.7)'} }
+      }
+    }
+  });
+}
+
+// ── 초기화 ──
+renderETFCards();
+syncSliders();
+fetchExchangeRate();
+</script>
+
+</body>
+</html>
