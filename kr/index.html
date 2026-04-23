@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국내상장 해외ETF 시뮬레이터 | 일반계좌 vs 연금저축펀드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2234;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #10b981;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --isa: #818cf8;
+    --general: #fb7185;
+    --pension: #34d399;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘Noto Sans KR’, sans-serif;
+font-size: 14px;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* BG grid */
+body::before {
+content: ‘’;
+position: fixed; inset: 0;
+background-image:
+linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+background-size: 40px 40px;
+pointer-events: none; z-index: 0;
+}
+
+.wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+
+/* Header */
+header {
+padding: 40px 0 32px;
+border-bottom: 1px solid var(–border);
+margin-bottom: 32px;
+}
+.header-badge {
+display: inline-flex; align-items: center; gap: 6px;
+background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+color: var(–accent); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+padding: 4px 10px; border-radius: 20px; text-transform: uppercase; margin-bottom: 14px;
+}
+header h1 {
+font-size: clamp(22px, 4vw, 32px);
+font-weight: 900; line-height: 1.25;
+background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+margin-bottom: 8px;
+}
+header p { color: var(–text2); font-size: 13px; line-height: 1.6; }
+
+/* Tax notice */
+.tax-notice {
+background: rgba(245,158,11,0.08);
+border: 1px solid rgba(245,158,11,0.25);
+border-radius: 10px; padding: 14px 18px; margin-bottom: 28px;
+font-size: 12.5px; color: #fbbf24; line-height: 1.7;
+}
+.tax-notice strong { color: #f59e0b; }
+
+/* Card */
+.card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 14px; padding: 24px;
+margin-bottom: 20px;
+}
+.card-title {
+font-size: 13px; font-weight: 700; color: var(–text2);
+letter-spacing: 0.06em; text-transform: uppercase;
+margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+}
+.card-title::before {
+content: ‘’; display: block; width: 3px; height: 14px;
+background: var(–accent); border-radius: 2px;
+}
+
+/* ETF selector */
+.etf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.etf-btn {
+background: var(–surface2);
+border: 1.5px solid var(–border);
+border-radius: 10px; padding: 14px 10px;
+cursor: pointer; transition: all 0.2s;
+text-align: center;
+}
+.etf-btn:hover { border-color: var(–accent); background: rgba(59,130,246,0.08); }
+.etf-btn.active { border-color: var(–accent); background: rgba(59,130,246,0.14); }
+.etf-btn .ticker {
+font-family: ‘Space Mono’, monospace;
+font-size: 11px; color: var(–accent); font-weight: 700;
+letter-spacing: 0.04em; margin-bottom: 4px;
+}
+.etf-btn .name { font-size: 11px; color: var(–text2); line-height: 1.4; }
+.etf-btn .meta { font-size: 10px; color: var(–text3); margin-top: 4px; }
+.etf-btn.active .name { color: var(–text); }
+
+/* Inputs row */
+.inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:600px) { .inputs-grid { grid-template-columns: 1fr; } .etf-grid { grid-template-columns: 1fr; } }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 11px; font-weight: 700; color: var(–text2); letter-spacing: 0.05em; text-transform: uppercase; }
+.field input, .field select {
+background: var(–surface2); border: 1px solid var(–border);
+color: var(–text); font-family: ‘Space Mono’, monospace; font-size: 14px;
+padding: 10px 14px; border-radius: 8px; outline: none;
+transition: border-color 0.2s; width: 100%;
+}
+.field input:focus, .field select:focus { border-color: var(–accent); }
+.field .hint { font-size: 10.5px; color: var(–text3); }
+
+/* Quick buttons */
+.quick-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.qbtn {
+background: var(–surface2); border: 1px solid var(–border);
+color: var(–text2); font-size: 11px; padding: 4px 9px; border-radius: 6px;
+cursor: pointer; transition: all 0.15s;
+}
+.qbtn:hover { border-color: var(–accent); color: var(–accent); }
+
+/* Account toggle */
+.account-tabs { display: flex; gap: 0; margin-bottom: 18px; border-radius: 10px; overflow: hidden; border: 1px solid var(–border); }
+.acc-tab {
+flex: 1; padding: 11px 8px; text-align: center; cursor: pointer;
+font-size: 12px; font-weight: 700; transition: all 0.2s;
+background: var(–surface2); color: var(–text3);
+}
+.acc-tab.active-general { background: rgba(251,113,133,0.15); color: var(–general); }
+.acc-tab.active-pension { background: rgba(52,211,153,0.15); color: var(–pension); }
+
+/* Tax info boxes */
+.tax-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.tax-box {
+border-radius: 10px; padding: 14px;
+font-size: 12px; line-height: 1.7;
+}
+.tax-box.general { background: rgba(251,113,133,0.07); border: 1px solid rgba(251,113,133,0.2); }
+.tax-box.pension { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); }
+.tax-box .label { font-weight: 700; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+.tax-box.general .label { color: var(–general); }
+.tax-box.pension .label { color: var(–pension); }
+.tax-box ul { list-style: none; }
+.tax-box li::before { content: ’· ’; color: var(–text3); }
+.tax-box li { color: var(–text2); }
+
+/* Pension withdrawal */
+.pension-rate-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+.pension-rate-row label { font-size: 12px; color: var(–text2); white-space: nowrap; }
+.pension-rate-row input { max-width: 90px; }
+
+/* Run button */
+.run-btn {
+width: 100%; padding: 16px;
+background: linear-gradient(135deg, #2563eb, #1d4ed8);
+border: none; border-radius: 12px;
+color: #fff; font-family: ‘Noto Sans KR’, sans-serif;
+font-size: 15px; font-weight: 900; cursor: pointer;
+letter-spacing: 0.03em; transition: all 0.2s;
+margin-top: 8px;
+}
+.run-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+.run-btn:active { transform: translateY(0); }
+
+/* Results */
+#results { display: none; }
+.result-banner {
+border-radius: 14px; padding: 22px 24px;
+margin-bottom: 20px;
+}
+.result-banner h2 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(–text2); }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:600px) { .compare-grid { grid-template-columns: 1fr; } .tax-boxes { grid-template-columns: 1fr; } }
+
+.compare-card {
+border-radius: 12px; padding: 18px;
+}
+.compare-card.general { background: rgba(251,113,133,0.08); border: 1px solid rgba(251,113,133,0.25); }
+.compare-card.pension { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); }
+
+.cc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+.compare-card.general .cc-label { color: var(–general); }
+.compare-card.pension .cc-label { color: var(–pension); }
+
+.cc-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.cc-row:last-child { border-bottom: none; }
+.cc-row .rk { font-size: 12px; color: var(–text2); }
+.cc-row .rv { font-family: ‘Space Mono’, monospace; font-size: 13px; font-weight: 700; color: var(–text); }
+.cc-row .rv.pos { color: var(–accent2); }
+.cc-row .rv.neg { color: var(–danger); }
+
+/* Advantage badge */
+.adv-badge {
+display: inline-block; padding: 3px 8px; border-radius: 6px;
+font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+margin-top: 10px;
+}
+.adv-badge.pension { background: rgba(52,211,153,0.2); color: var(–pension); }
+.adv-badge.general { background: rgba(251,113,133,0.2); color: var(–general); }
+
+/* Chart */
+.chart-wrap { position: relative; height: 320px; margin-top: 8px; }
+
+/* Year table */
+.year-table-wrap { overflow-x: auto; margin-top: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th {
+background: var(–surface2);
+color: var(–text2); font-weight: 700;
+padding: 9px 12px; text-align: right;
+border-bottom: 1px solid var(–border);
+white-space: nowrap;
+}
+th:first-child { text-align: center; }
+td {
+padding: 8px 12px; text-align: right;
+border-bottom: 1px solid rgba(255,255,255,0.04);
+font-family: ‘Space Mono’, monospace; font-size: 11.5px;
+color: var(–text2);
+}
+td:first-child { text-align: center; color: var(–text3); font-family: inherit; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.td-general { color: var(–general) !important; }
+.td-pension { color: var(–pension) !important; }
+.td-diff-pos { color: var(–accent2) !important; }
+
+/* Disclaimer */
+.disclaimer {
+background: rgba(255,255,255,0.03); border: 1px solid var(–border);
+border-radius: 10px; padding: 14px 18px; margin-top: 20px;
+font-size: 11px; color: var(–text3); line-height: 1.8;
+}
+
+/* Tabs for chart */
+.chart-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.ctab {
+padding: 6px 14px; border-radius: 20px; font-size: 12px;
+cursor: pointer; border: 1px solid var(–border);
+background: var(–surface2); color: var(–text2);
+transition: all 0.2s; font-weight: 600;
+}
+.ctab.active { background: var(–accent); border-color: var(–accent); color: #fff; }
+
+/* Lump / DCA toggle */
+.mode-tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(–border); }
+.mtab {
+flex: 1; padding: 10px; text-align: center; cursor: pointer;
+font-size: 12px; font-weight: 700; transition: all 0.2s;
+background: var(–surface2); color: var(–text3);
+}
+.mtab.active { background: rgba(59,130,246,0.2); color: var(–accent); }
+
+.section-divider { height: 1px; background: var(–border); margin: 24px 0; }
+</style>
+
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="header-badge">🇰🇷 국내상장 해외ETF</div>
+    <h1>계좌유형별 ETF<br>장기투자 시뮬레이터</h1>
+    <p>일반주식계좌 vs 연금저축펀드 · TIGER 나스닥100 / S&amp;P500 / 미국배당다우존스</p>
+  </header>
+
+  <div class="tax-notice">
+    <strong>⚠️ 2025년 세제 변경 반영</strong><br>
+    연금저축펀드 내 국내상장 해외ETF도 <strong>분배금(배당)에 15.4% 배당소득세 선취 원천징수</strong> 후 잔액이 재투자됩니다.<br>
+    매매차익은 기존과 동일하게 과세이연 → 연금 수령 시 연금소득세(3.3~5.5%) 적용.
+  </div>
+
+  <!-- ETF 선택 -->
+
+  <div class="card">
+    <div class="card-title">1 ETF 선택</div>
+    <div class="etf-grid">
+      <div class="etf-btn active" data-etf="qqq100" onclick="selectEtf(this)">
+        <div class="ticker">TIGER 나스닥100</div>
+        <div class="name">미국 나스닥100<br>대형 기술주 100종</div>
+        <div class="meta">연평균 +18% · 배당 0.6%</div>
+      </div>
+      <div class="etf-btn" data-etf="sp500" onclick="selectEtf(this)">
+        <div class="ticker">TIGER S&amp;P500</div>
+        <div class="name">미국 S&amp;P500<br>대형주 500종</div>
+        <div class="meta">연평균 +13% · 배당 1.3%</div>
+      </div>
+      <div class="etf-btn" data-etf="schd" onclick="selectEtf(this)">
+        <div class="ticker">TIGER 미국배당</div>
+        <div class="name">미국배당다우존스<br>(SCHD 유사)</div>
+        <div class="meta">연평균 +11% · 배당 3.5%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 투자 모드 -->
+
+  <div class="card">
+    <div class="card-title">2 투자 방식</div>
+    <div class="mode-tabs" style="margin-bottom:18px;">
+      <div class="mtab active" id="tab-both" onclick="setMode('both')">일시금 + 적립식 비교</div>
+      <div class="mtab" id="tab-lump" onclick="setMode('lump')">일시금만</div>
+      <div class="mtab" id="tab-dca" onclick="setMode('dca')">적립식만</div>
+    </div>
+    <div class="inputs-grid">
+      <div class="field" id="field-lump">
+        <label>초기 일시금 (원)</label>
+        <input type="number" id="lumpsum" value="10000000" step="1000000">
+        <div class="quick-btns">
+          <span class="qbtn" onclick="setVal('lumpsum',1000000)">100만</span>
+          <span class="qbtn" onclick="setVal('lumpsum',5000000)">500만</span>
+          <span class="qbtn" onclick="setVal('lumpsum',10000000)">1천만</span>
+          <span class="qbtn" onclick="setVal('lumpsum',30000000)">3천만</span>
+          <span class="qbtn" onclick="setVal('lumpsum',50000000)">5천만</span>
+        </div>
+      </div>
+      <div class="field" id="field-dca">
+        <label>월 적립금 (원)</label>
+        <input type="number" id="monthly" value="500000" step="100000">
+        <div class="quick-btns">
+          <span class="qbtn" onclick="setVal('monthly',100000)">10만</span>
+          <span class="qbtn" onclick="setVal('monthly',300000)">30만</span>
+          <span class="qbtn" onclick="setVal('monthly',500000)">50만</span>
+          <span class="qbtn" onclick="setVal('monthly',1000000)">100만</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>투자 기간 (년)</label>
+        <input type="number" id="years" value="20" min="1" max="50">
+        <div class="quick-btns">
+          <span class="qbtn" onclick="setVal('years',10)">10년</span>
+          <span class="qbtn" onclick="setVal('years',20)">20년</span>
+          <span class="qbtn" onclick="setVal('years',30)">30년</span>
+          <span class="qbtn" onclick="setVal('years',40)">40년</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>연평균 수익률 (%) <span style="color:var(--text3);font-weight:400;">(수동조정)</span></label>
+        <input type="number" id="annual-return" value="18" step="0.5">
+        <div class="hint">ETF 선택 시 기본값 자동 설정</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 세금 설정 -->
+
+  <div class="card">
+    <div class="card-title">3 세금 설정</div>
+    <div class="tax-boxes">
+      <div class="tax-box general">
+        <div class="label">📕 일반주식계좌</div>
+        <ul>
+          <li>분배금: <strong style="color:#fca5a5;">배당소득세 15.4%</strong></li>
+          <li>매매차익: <strong style="color:#fca5a5;">배당소득세 15.4%</strong></li>
+          <li>금융소득 2천만↑: 종합과세</li>
+          <li>연간 250만 손익통산 X</li>
+        </ul>
+      </div>
+      <div class="tax-box pension">
+        <div class="label">📗 연금저축펀드</div>
+        <ul>
+          <li>분배금: <strong style="color:#6ee7b7;">15.4% 선취 원천징수</strong></li>
+          <li>매매차익: <strong style="color:#6ee7b7;">과세이연 → 연금소득세</strong></li>
+          <li>연금수령: 3.3%~5.5%</li>
+          <li>일시수령: 기타소득세 16.5%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="field" style="max-width:320px;">
+      <label>연금저축 수령 시 연금소득세율 (%)</label>
+      <input type="number" id="pension-tax" value="3.3" step="0.1" min="3.3" max="5.5">
+      <div class="hint">만 70세↑ 3.3% / 만 70세 미만 4.4% / 만 55~69세 5.5%</div>
+    </div>
+    <div class="field" style="max-width:320px; margin-top:12px;">
+      <label>배당소득세율 (%)</label>
+      <input type="number" id="div-tax" value="15.4" step="0.1" min="0" max="50">
+      <div class="hint">기본 15.4% (소득세 14% + 지방세 1.4%)</div>
+    </div>
+  </div>
+
+<button class="run-btn" onclick="simulate()">🚀 시뮬레이션 시작</button>
+
+  <!-- RESULTS -->
+
+  <div id="results">
+    <div class="section-divider"></div>
+    <div id="result-title" style="font-size:15px;font-weight:900;margin-bottom:20px;color:var(--text);"></div>
+
+```
+<!-- 일시금 결과 -->
+<div id="lump-section">
+  <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.05em;">💰 일시금 거치식</div>
+  <div class="compare-grid" id="lump-compare"></div>
+</div>
+
+<!-- 적립식 결과 -->
+<div id="dca-section" style="margin-top:20px;">
+  <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.05em;">📅 매달 적립식</div>
+  <div class="compare-grid" id="dca-compare"></div>
+</div>
+
+<!-- 차트 -->
+<div class="card" style="margin-top:20px;">
+  <div class="card-title">연도별 자산 성장</div>
+  <div class="chart-tabs" id="chart-tabs">
+    <div class="ctab active" onclick="switchChart('lump-chart')" id="ctab-lump">일시금</div>
+    <div class="ctab" onclick="switchChart('dca-chart')" id="ctab-dca">적립식</div>
+  </div>
+  <div class="chart-wrap" id="lump-chart"><canvas id="canvas-lump"></canvas></div>
+  <div class="chart-wrap" id="dca-chart" style="display:none;"><canvas id="canvas-dca"></canvas></div>
+</div>
+
+<!-- 연도별 테이블 -->
+<div class="card" style="margin-top:0;">
+  <div class="card-title">연도별 상세 (일시금)</div>
+  <div class="year-table-wrap" id="lump-table"></div>
+</div>
+<div class="card" style="margin-top:0;">
+  <div class="card-title">연도별 상세 (적립식)</div>
+  <div class="year-table-wrap" id="dca-table"></div>
+</div>
+
+<div class="disclaimer">
+  ※ 본 시뮬레이터는 참고용 추정치로 투자 권유가 아닙니다.<br>
+  ※ 실제 수익률은 환율 변동, 운용 보수, 분배금 지급 시점, 세제 변경 등에 따라 달라질 수 있습니다.<br>
+  ※ 연저펀 분배금 선취 15.4%는 2025년 기준이며, 이후 세법 개정에 따라 변경될 수 있습니다.<br>
+  ※ 연간 250만원 공제(해외ETF 양도세)는 국내상장 해외ETF 매매차익에 적용되지 않습니다.
+</div>
+```
+
+  </div>
+
+</div>
+
+<script>
+const ETF_DATA = {
+  qqq100: { name: 'TIGER 나스닥100', annualReturn: 0.18, divYield: 0.006 },
+  sp500:  { name: 'TIGER S&P500',    annualReturn: 0.13, divYield: 0.013 },
+  schd:   { name: 'TIGER 미국배당다우존스', annualReturn: 0.11, divYield: 0.035 },
+};
+
+let selectedEtf = 'qqq100';
+let mode = 'both'; // both | lump | dca
+let lumpChart = null;
+let dcaChart = null;
+
+function selectEtf(el) {
+  document.querySelectorAll('.etf-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedEtf = el.dataset.etf;
+  const d = ETF_DATA[selectedEtf];
+  document.getElementById('annual-return').value = (d.annualReturn * 100).toFixed(1);
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + m).classList.add('active');
+  const fl = document.getElementById('field-lump');
+  const fd = document.getElementById('field-dca');
+  if (m === 'lump') { fl.style.opacity = '1'; fd.style.opacity = '0.35'; }
+  else if (m === 'dca') { fl.style.opacity = '0.35'; fd.style.opacity = '1'; }
+  else { fl.style.opacity = '1'; fd.style.opacity = '1'; }
+}
+
+function setVal(id, v) { document.getElementById(id).value = v; }
+
+function fmt(v) {
+  if (v >= 1e8) return (v/1e8).toFixed(1) + '억';
+  if (v >= 1e4) return Math.round(v/1e4) + '만';
+  return Math.round(v).toLocaleString();
+}
+function fmtFull(v) {
+  const eok = Math.floor(v / 1e8);
+  const man = Math.floor((v % 1e8) / 1e4);
+  let s = '';
+  if (eok > 0) s += eok + '억 ';
+  if (man > 0) s += man + '만';
+  return s.trim() || '0';
+}
+
+// ─────────────────────────────────────────────
+// 핵심 계산 함수
+// r: 연평균 주가상승률(배당제외), divYield: 배당수익률
+// divTax: 배당소득세율(선취), gainTax: 매매차익세율
+// pensionTax: 연금소득세율 (연금계좌 매매차익 최종세)
+// ─────────────────────────────────────────────
+
+function calcYearly({ lump, monthly, years, totalReturn, divYield, divTax, gainTax, pensionTax, isPension }) {
+  // totalReturn = 연평균 ETF 전체 수익률 (주가 + 배당)
+  // 주가 순상승률 = totalReturn - divYield
+  const priceReturn = totalReturn - divYield;
+
+  const data = [];
+  let principal = lump;
+  let shares = lump; // 단위: 원 (주가 기준 자산)
+  let totalInvested = lump;
+  let cumulativeDivTaxPaid = 0;
+
+  // 적립식 DCA 별도 관리
+  let dcaShares = 0;
+  let dcaTotalInvested = 0;
+  let dcaCumDivTaxPaid = 0;
+
+  for (let y = 1; y <= years; y++) {
+    // ── 일시금 ──
+    // 1. 주가 상승
+    shares *= (1 + priceReturn);
+    // 2. 배당 발생
+    const div = shares * divYield;
+    let divAfterTax;
+    if (isPension) {
+      // 연저펀: 선취 15.4% 원천징수
+      divAfterTax = div * (1 - divTax);
+      cumulativeDivTaxPaid += div * divTax;
+    } else {
+      // 일반: 선취 15.4%
+      divAfterTax = div * (1 - divTax);
+      cumulativeDivTaxPaid += div * divTax;
+    }
+    // 3. 배당 재투자
+    shares += divAfterTax;
+    totalInvested += 0; // 일시금은 추가 납입 없음
+
+    // ── 적립식(DCA) ──
+    // 월납입: 연중 균등 매월 납입
+    const monthlyGrowth = Math.pow(1 + priceReturn, 1/12);
+    // 매월 납입 후 그 해 성장 반영
+    let dcaAddThisYear = 0;
+    for (let m = 1; m <= 12; m++) {
+      dcaShares += monthly;
+      dcaTotalInvested += monthly;
+      dcaAddThisYear += monthly;
+      dcaShares *= monthlyGrowth;
+    }
+    // 연간 배당
+    const dcaDiv = dcaShares * divYield;
+    const dcaDivAfterTax = dcaDiv * (1 - divTax);
+    dcaCumDivTaxPaid += dcaDiv * divTax;
+    dcaShares += dcaDivAfterTax;
+
+    // ── 세후 최종 자산 계산 ──
+    // 일시금
+    const lumpGain = shares - lump;
+    let lumpNet;
+    if (isPension) {
+      // 매매차익만 연금소득세
+      lumpNet = lump + lumpGain * (1 - pensionTax);
+      // 단, 이미 배당세 납부한 부분은 이중과세 방지 (배당재투자분은 비용처리 근사)
+      // 실무상 연저펀 매매차익과세기준이 복잡하므로 단순화: 총 증가분에서 배당세납부분 제외 후 pensionTax
+      const lumpGainExcludingDivTax = lumpGain; // 이미 배당세 차감된 상태
+      lumpNet = lump + lumpGainExcludingDivTax * (1 - pensionTax);
+    } else {
+      // 일반: 매매차익 15.4% (이미 배당세 납부한 부분 제외)
+      lumpNet = lump + lumpGain * (1 - gainTax);
+    }
+
+    // 적립식
+    const dcaGain = dcaShares - dcaTotalInvested;
+    let dcaNet;
+    if (isPension) {
+      dcaNet = dcaTotalInvested + dcaGain * (1 - pensionTax);
+    } else {
+      dcaNet = dcaTotalInvested + dcaGain * (1 - gainTax);
+    }
+
+    data.push({
+      year: y,
+      lumpGross: shares,
+      lumpNet: Math.max(0, lumpNet),
+      lumpInvested: lump,
+      dcaGross: dcaShares,
+      dcaNet: Math.max(0, dcaNet),
+      dcaInvested: dcaTotalInvested,
+    });
+  }
+  return data;
+}
+
+function simulate() {
+  const lump = parseFloat(document.getElementById('lumpsum').value) || 0;
+  const monthly = parseFloat(document.getElementById('monthly').value) || 0;
+  const years = parseInt(document.getElementById('years').value) || 20;
+  const annualReturn = parseFloat(document.getElementById('annual-return').value) / 100;
+  const divTaxRate = parseFloat(document.getElementById('div-tax').value) / 100;
+  const pensionTax = parseFloat(document.getElementById('pension-tax').value) / 100;
+  const gainTax = divTaxRate; // 국내상장 해외ETF 매매차익 = 배당소득세 15.4%
+  const etf = ETF_DATA[selectedEtf];
+  const divYield = etf.divYield;
+
+  const commonParams = { lump, monthly, years, totalReturn: annualReturn, divYield, divTaxRate, gainTax, pensionTax, divTax: divTaxRate };
+
+  const genData = calcYearly({ ...commonParams, isPension: false });
+  const penData = calcYearly({ ...commonParams, isPension: true });
+
+  const finalYear = years;
+  const gLast = genData[finalYear - 1];
+  const pLast = penData[finalYear - 1];
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('result-title').textContent =
+    `${etf.name} · ${years}년 시뮬레이션 결과`;
+
+  // 일시금 compare cards
+  if (mode !== 'dca') {
+    document.getElementById('lump-section').style.display = '';
+    document.getElementById('lump-compare').innerHTML =
+      compareCards(gLast, pLast, 'lump', lump, 0);
+  } else {
+    document.getElementById('lump-section').style.display = 'none';
+  }
+
+  // 적립식 compare cards
+  if (mode !== 'lump') {
+    document.getElementById('dca-section').style.display = '';
+    document.getElementById('dca-compare').innerHTML =
+      compareCards(gLast, pLast, 'dca', 0, monthly);
+  } else {
+    document.getElementById('dca-section').style.display = 'none';
+  }
+
+  // Chart tabs visibility
+  const ctabLump = document.getElementById('ctab-lump');
+  const ctabDca = document.getElementById('ctab-dca');
+  if (mode === 'lump') { ctabDca.style.display='none'; switchChart('lump-chart'); }
+  else if (mode === 'dca') { ctabLump.style.display='none'; switchChart('dca-chart'); }
+  else { ctabLump.style.display=''; ctabDca.style.display=''; switchChart('lump-chart'); }
+
+  // Charts
+  renderChart('canvas-lump', genData, penData, 'lump', years);
+  renderChart('canvas-dca', genData, penData, 'dca', years);
+
+  // Tables
+  renderTable('lump-table', genData, penData, 'lump', years);
+  renderTable('dca-table', genData, penData, 'dca', years);
+
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function compareCards(gLast, pLast, type, lump, monthly) {
+  const gGross = type === 'lump' ? gLast.lumpGross : gLast.dcaGross;
+  const gNet = type === 'lump' ? gLast.lumpNet : gLast.dcaNet;
+  const gInv = type === 'lump' ? gLast.lumpInvested : gLast.dcaInvested;
+  const pGross = type === 'lump' ? pLast.lumpGross : pLast.dcaGross;
+  const pNet = type === 'lump' ? pLast.lumpNet : pLast.dcaNet;
+  const pInv = type === 'lump' ? pLast.lumpInvested : pLast.dcaInvested;
+
+  const gProfit = gNet - gInv;
+  const pProfit = pNet - pInv;
+  const diff = pNet - gNet;
+  const diffSign = diff >= 0 ? '+' : '';
+  const winner = diff >= 0 ? 'pension' : 'general';
+
+  function card(cls, label, gross, net, invested) {
+    const profit = net - invested;
+    const profitRate = invested > 0 ? (profit / invested * 100).toFixed(1) : '0';
+    const taxBurden = gross - net;
+    return `<div class="compare-card ${cls}">
+      <div class="cc-label">${cls === 'general' ? '📕 일반주식계좌' : '📗 연금저축펀드'}</div>
+      <div class="cc-row"><span class="rk">총 납입 원금</span><span class="rv">${fmtFull(invested)}원</span></div>
+      <div class="cc-row"><span class="rk">세전 평가액</span><span class="rv">${fmtFull(Math.round(gross))}원</span></div>
+      <div class="cc-row"><span class="rk">세후 최종 자산</span><span class="rv pos">${fmtFull(Math.round(net))}원</span></div>
+      <div class="cc-row"><span class="rk">세후 수익</span><span class="rv pos">+${fmtFull(Math.round(profit))}원</span></div>
+      <div class="cc-row"><span class="rk">총 수익률</span><span class="rv pos">+${profitRate}%</span></div>
+      <div class="cc-row"><span class="rk">세금 부담</span><span class="rv neg">-${fmtFull(Math.round(taxBurden))}원</span></div>
+      ${winner === cls ? `<div class="adv-badge ${cls}">✓ 유리한 계좌</div>` : ''}
+    </div>`;
+  }
+
+  return card('general', '일반', gGross, gNet, gInv)
+       + card('pension', '연저펀', pGross, pNet, pInv)
+       + `<div style="grid-column:1/-1;background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.2);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--text2);">
+    <strong style="color:var(--accent);">연저펀 vs 일반계좌 세후 자산 차이:</strong>
+    <span style="font-family:'Space Mono',monospace;font-weight:700;color:${diff>=0?'var(--pension)':'var(--general)'};">
+      ${diffSign}${fmtFull(Math.round(Math.abs(diff)))}원 (${diff>=0?'연저펀 유리':'일반계좌 유리'})
+    </span>
+  </div>`;
+}
+
+function renderChart(canvasId, genData, penData, type, years) {
+  const labels = genData.map(d => d.year + '년');
+  const genArr = genData.map(d => Math.round(type==='lump' ? d.lumpNet : d.dcaNet));
+  const penArr = penData.map(d => Math.round(type==='lump' ? d.lumpNet : d.dcaNet));
+  const invArr = genData.map(d => Math.round(type==='lump' ? d.lumpInvested : d.dcaInvested));
+
+  const existing = type === 'lump' ? lumpChart : dcaChart;
+  if (existing) existing.destroy();
+
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '일반계좌 (세후)',
+          data: genArr,
+          borderColor: '#fb7185',
+          backgroundColor: 'rgba(251,113,133,0.08)',
+          borderWidth: 2, pointRadius: 2, fill: true, tension: 0.3,
+        },
+        {
+          label: '연금저축펀드 (세후)',
+          data: penArr,
+          borderColor: '#34d399',
+          backgroundColor: 'rgba(52,211,153,0.08)',
+          borderWidth: 2, pointRadius: 2, fill: true, tension: 0.3,
+        },
+        {
+          label: '납입 원금',
+          data: invArr,
+          borderColor: '#475569',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5, pointRadius: 0, borderDash: [4,4],
+        },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 14 } },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${fmtFull(ctx.raw)}원`,
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 10 }, maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#64748b', font: { size: 10 }, callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.06)' } },
+      },
+    }
+  });
+  if (type === 'lump') lumpChart = chart; else dcaChart = chart;
+}
+
+function renderTable(containerId, genData, penData, type, years) {
+  // 5년 단위만
+  const rows = genData.filter((_, i) => (i+1) % 5 === 0 || i === 0 || i === years - 1);
+  let html = `<table>
+    <thead><tr>
+      <th>경과</th>
+      <th>납입 원금</th>
+      <th style="color:var(--general);">일반 세전</th>
+      <th style="color:var(--general);">일반 세후</th>
+      <th style="color:var(--pension);">연저펀 세전</th>
+      <th style="color:var(--pension);">연저펀 세후</th>
+      <th>유리한 쪽</th>
+    </tr></thead><tbody>`;
+
+  rows.forEach(gRow => {
+    const pRow = penData[gRow.year - 1];
+    const gGross = type==='lump' ? gRow.lumpGross : gRow.dcaGross;
+    const gNet = type==='lump' ? gRow.lumpNet : gRow.dcaNet;
+    const pGross = type==='lump' ? pRow.lumpGross : pRow.dcaGross;
+    const pNet = type==='lump' ? pRow.lumpNet : pRow.dcaNet;
+    const inv = type==='lump' ? gRow.lumpInvested : gRow.dcaInvested;
+    const better = pNet >= gNet ? '연저펀' : '일반';
+    const betterColor = pNet >= gNet ? 'var(--pension)' : 'var(--general)';
+    html += `<tr>
+      <td>${gRow.year}년</td>
+      <td>${fmtFull(Math.round(inv))}원</td>
+      <td class="td-general">${fmtFull(Math.round(gGross))}원</td>
+      <td class="td-general">${fmtFull(Math.round(gNet))}원</td>
+      <td class="td-pension">${fmtFull(Math.round(pGross))}원</td>
+      <td class="td-pension">${fmtFull(Math.round(pNet))}원</td>
+      <td style="color:${betterColor};font-weight:700;font-family:inherit;">${better}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById(containerId).innerHTML = html;
+}
+
+function switchChart(show) {
+  document.getElementById('lump-chart').style.display = show==='lump-chart' ? '' : 'none';
+  document.getElementById('dca-chart').style.display = show==='dca-chart' ? '' : 'none';
+  document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+  if (show==='lump-chart') document.getElementById('ctab-lump').classList.add('active');
+  else document.getElementById('ctab-dca').classList.add('active');
+}
+</script>
+
+</body>
+</html>
