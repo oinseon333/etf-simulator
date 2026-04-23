@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -29,254 +28,253 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
 
-body {
-background: var(–bg);
-color: var(–text);
-font-family: ‘Noto Sans KR’, sans-serif;
-font-size: 14px;
-min-height: 100vh;
-overflow-x: hidden;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* BG grid */
-body::before {
-content: ‘’;
-position: fixed; inset: 0;
-background-image:
-linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
-linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
-background-size: 40px 40px;
-pointer-events: none; z-index: 0;
-}
+  /* BG grid */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
 
-.wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+  .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
 
-/* Header */
-header {
-padding: 40px 0 32px;
-border-bottom: 1px solid var(–border);
-margin-bottom: 32px;
-}
-.header-badge {
-display: inline-flex; align-items: center; gap: 6px;
-background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
-color: var(–accent); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
-padding: 4px 10px; border-radius: 20px; text-transform: uppercase; margin-bottom: 14px;
-}
-header h1 {
-font-size: clamp(22px, 4vw, 32px);
-font-weight: 900; line-height: 1.25;
-background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
--webkit-background-clip: text; -webkit-text-fill-color: transparent;
-margin-bottom: 8px;
-}
-header p { color: var(–text2); font-size: 13px; line-height: 1.6; }
+  /* Header */
+  header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.3);
+    color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    padding: 4px 10px; border-radius: 20px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  header h1 {
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 900; line-height: 1.25;
+    background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  header p { color: var(--text2); font-size: 13px; line-height: 1.6; }
 
-/* Tax notice */
-.tax-notice {
-background: rgba(245,158,11,0.08);
-border: 1px solid rgba(245,158,11,0.25);
-border-radius: 10px; padding: 14px 18px; margin-bottom: 28px;
-font-size: 12.5px; color: #fbbf24; line-height: 1.7;
-}
-.tax-notice strong { color: #f59e0b; }
+  /* Tax notice */
+  .tax-notice {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 10px; padding: 14px 18px; margin-bottom: 28px;
+    font-size: 12.5px; color: #fbbf24; line-height: 1.7;
+  }
+  .tax-notice strong { color: #f59e0b; }
 
-/* Card */
-.card {
-background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 14px; padding: 24px;
-margin-bottom: 20px;
-}
-.card-title {
-font-size: 13px; font-weight: 700; color: var(–text2);
-letter-spacing: 0.06em; text-transform: uppercase;
-margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
-}
-.card-title::before {
-content: ‘’; display: block; width: 3px; height: 14px;
-background: var(–accent); border-radius: 2px;
-}
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 700; color: var(--text2);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before {
+    content: ''; display: block; width: 3px; height: 14px;
+    background: var(--accent); border-radius: 2px;
+  }
 
-/* ETF selector */
-.etf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.etf-btn {
-background: var(–surface2);
-border: 1.5px solid var(–border);
-border-radius: 10px; padding: 14px 10px;
-cursor: pointer; transition: all 0.2s;
-text-align: center;
-}
-.etf-btn:hover { border-color: var(–accent); background: rgba(59,130,246,0.08); }
-.etf-btn.active { border-color: var(–accent); background: rgba(59,130,246,0.14); }
-.etf-btn .ticker {
-font-family: ‘Space Mono’, monospace;
-font-size: 11px; color: var(–accent); font-weight: 700;
-letter-spacing: 0.04em; margin-bottom: 4px;
-}
-.etf-btn .name { font-size: 11px; color: var(–text2); line-height: 1.4; }
-.etf-btn .meta { font-size: 10px; color: var(–text3); margin-top: 4px; }
-.etf-btn.active .name { color: var(–text); }
+  /* ETF selector */
+  .etf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .etf-btn {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 14px 10px;
+    cursor: pointer; transition: all 0.2s;
+    text-align: center;
+  }
+  .etf-btn:hover { border-color: var(--accent); background: rgba(59,130,246,0.08); }
+  .etf-btn.active { border-color: var(--accent); background: rgba(59,130,246,0.14); }
+  .etf-btn .ticker {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.04em; margin-bottom: 4px;
+  }
+  .etf-btn .name { font-size: 11px; color: var(--text2); line-height: 1.4; }
+  .etf-btn .meta { font-size: 10px; color: var(--text3); margin-top: 4px; }
+  .etf-btn.active .name { color: var(--text); }
 
-/* Inputs row */
-.inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media(max-width:600px) { .inputs-grid { grid-template-columns: 1fr; } .etf-grid { grid-template-columns: 1fr; } }
+  /* Inputs row */
+  .inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:600px) { .inputs-grid { grid-template-columns: 1fr; } .etf-grid { grid-template-columns: 1fr; } }
 
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field label { font-size: 11px; font-weight: 700; color: var(–text2); letter-spacing: 0.05em; text-transform: uppercase; }
-.field input, .field select {
-background: var(–surface2); border: 1px solid var(–border);
-color: var(–text); font-family: ‘Space Mono’, monospace; font-size: 14px;
-padding: 10px 14px; border-radius: 8px; outline: none;
-transition: border-color 0.2s; width: 100%;
-}
-.field input:focus, .field select:focus { border-color: var(–accent); }
-.field .hint { font-size: 10.5px; color: var(–text3); }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 11px; font-weight: 700; color: var(--text2); letter-spacing: 0.05em; text-transform: uppercase; }
+  .field input, .field select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Space Mono', monospace; font-size: 14px;
+    padding: 10px 14px; border-radius: 8px; outline: none;
+    transition: border-color 0.2s; width: 100%;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field .hint { font-size: 10.5px; color: var(--text3); }
 
-/* Quick buttons */
-.quick-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-.qbtn {
-background: var(–surface2); border: 1px solid var(–border);
-color: var(–text2); font-size: 11px; padding: 4px 9px; border-radius: 6px;
-cursor: pointer; transition: all 0.15s;
-}
-.qbtn:hover { border-color: var(–accent); color: var(–accent); }
+  /* Quick buttons */
+  .quick-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .qbtn {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2); font-size: 11px; padding: 4px 9px; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .qbtn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* Account toggle */
-.account-tabs { display: flex; gap: 0; margin-bottom: 18px; border-radius: 10px; overflow: hidden; border: 1px solid var(–border); }
-.acc-tab {
-flex: 1; padding: 11px 8px; text-align: center; cursor: pointer;
-font-size: 12px; font-weight: 700; transition: all 0.2s;
-background: var(–surface2); color: var(–text3);
-}
-.acc-tab.active-general { background: rgba(251,113,133,0.15); color: var(–general); }
-.acc-tab.active-pension { background: rgba(52,211,153,0.15); color: var(–pension); }
+  /* Account toggle */
+  .account-tabs { display: flex; gap: 0; margin-bottom: 18px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .acc-tab {
+    flex: 1; padding: 11px 8px; text-align: center; cursor: pointer;
+    font-size: 12px; font-weight: 700; transition: all 0.2s;
+    background: var(--surface2); color: var(--text3);
+  }
+  .acc-tab.active-general { background: rgba(251,113,133,0.15); color: var(--general); }
+  .acc-tab.active-pension { background: rgba(52,211,153,0.15); color: var(--pension); }
 
-/* Tax info boxes */
-.tax-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
-.tax-box {
-border-radius: 10px; padding: 14px;
-font-size: 12px; line-height: 1.7;
-}
-.tax-box.general { background: rgba(251,113,133,0.07); border: 1px solid rgba(251,113,133,0.2); }
-.tax-box.pension { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); }
-.tax-box .label { font-weight: 700; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
-.tax-box.general .label { color: var(–general); }
-.tax-box.pension .label { color: var(–pension); }
-.tax-box ul { list-style: none; }
-.tax-box li::before { content: ’· ’; color: var(–text3); }
-.tax-box li { color: var(–text2); }
+  /* Tax info boxes */
+  .tax-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .tax-box {
+    border-radius: 10px; padding: 14px;
+    font-size: 12px; line-height: 1.7;
+  }
+  .tax-box.general { background: rgba(251,113,133,0.07); border: 1px solid rgba(251,113,133,0.2); }
+  .tax-box.pension { background: rgba(52,211,153,0.07); border: 1px solid rgba(52,211,153,0.2); }
+  .tax-box .label { font-weight: 700; margin-bottom: 6px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .tax-box.general .label { color: var(--general); }
+  .tax-box.pension .label { color: var(--pension); }
+  .tax-box ul { list-style: none; }
+  .tax-box li::before { content: '· '; color: var(--text3); }
+  .tax-box li { color: var(--text2); }
 
-/* Pension withdrawal */
-.pension-rate-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
-.pension-rate-row label { font-size: 12px; color: var(–text2); white-space: nowrap; }
-.pension-rate-row input { max-width: 90px; }
+  /* Pension withdrawal */
+  .pension-rate-row { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+  .pension-rate-row label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .pension-rate-row input { max-width: 90px; }
 
-/* Run button */
-.run-btn {
-width: 100%; padding: 16px;
-background: linear-gradient(135deg, #2563eb, #1d4ed8);
-border: none; border-radius: 12px;
-color: #fff; font-family: ‘Noto Sans KR’, sans-serif;
-font-size: 15px; font-weight: 900; cursor: pointer;
-letter-spacing: 0.03em; transition: all 0.2s;
-margin-top: 8px;
-}
-.run-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
-.run-btn:active { transform: translateY(0); }
+  /* Run button */
+  .run-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none; border-radius: 12px;
+    color: #fff; font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px; font-weight: 900; cursor: pointer;
+    letter-spacing: 0.03em; transition: all 0.2s;
+    margin-top: 8px;
+  }
+  .run-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+  .run-btn:active { transform: translateY(0); }
 
-/* Results */
-#results { display: none; }
-.result-banner {
-border-radius: 14px; padding: 22px 24px;
-margin-bottom: 20px;
-}
-.result-banner h2 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(–text2); }
+  /* Results */
+  #results { display: none; }
+  .result-banner {
+    border-radius: 14px; padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .result-banner h2 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--text2); }
 
-.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-@media(max-width:600px) { .compare-grid { grid-template-columns: 1fr; } .tax-boxes { grid-template-columns: 1fr; } }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:600px) { .compare-grid { grid-template-columns: 1fr; } .tax-boxes { grid-template-columns: 1fr; } }
 
-.compare-card {
-border-radius: 12px; padding: 18px;
-}
-.compare-card.general { background: rgba(251,113,133,0.08); border: 1px solid rgba(251,113,133,0.25); }
-.compare-card.pension { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); }
+  .compare-card {
+    border-radius: 12px; padding: 18px;
+  }
+  .compare-card.general { background: rgba(251,113,133,0.08); border: 1px solid rgba(251,113,133,0.25); }
+  .compare-card.pension { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); }
 
-.cc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
-.compare-card.general .cc-label { color: var(–general); }
-.compare-card.pension .cc-label { color: var(–pension); }
+  .cc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .compare-card.general .cc-label { color: var(--general); }
+  .compare-card.pension .cc-label { color: var(--pension); }
 
-.cc-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.cc-row:last-child { border-bottom: none; }
-.cc-row .rk { font-size: 12px; color: var(–text2); }
-.cc-row .rv { font-family: ‘Space Mono’, monospace; font-size: 13px; font-weight: 700; color: var(–text); }
-.cc-row .rv.pos { color: var(–accent2); }
-.cc-row .rv.neg { color: var(–danger); }
+  .cc-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .cc-row:last-child { border-bottom: none; }
+  .cc-row .rk { font-size: 12px; color: var(--text2); }
+  .cc-row .rv { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--text); }
+  .cc-row .rv.pos { color: var(--accent2); }
+  .cc-row .rv.neg { color: var(--danger); }
 
-/* Advantage badge */
-.adv-badge {
-display: inline-block; padding: 3px 8px; border-radius: 6px;
-font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
-margin-top: 10px;
-}
-.adv-badge.pension { background: rgba(52,211,153,0.2); color: var(–pension); }
-.adv-badge.general { background: rgba(251,113,133,0.2); color: var(–general); }
+  /* Advantage badge */
+  .adv-badge {
+    display: inline-block; padding: 3px 8px; border-radius: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.05em;
+    margin-top: 10px;
+  }
+  .adv-badge.pension { background: rgba(52,211,153,0.2); color: var(--pension); }
+  .adv-badge.general { background: rgba(251,113,133,0.2); color: var(--general); }
 
-/* Chart */
-.chart-wrap { position: relative; height: 320px; margin-top: 8px; }
+  /* Chart */
+  .chart-wrap { position: relative; height: 320px; margin-top: 8px; }
 
-/* Year table */
-.year-table-wrap { overflow-x: auto; margin-top: 14px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th {
-background: var(–surface2);
-color: var(–text2); font-weight: 700;
-padding: 9px 12px; text-align: right;
-border-bottom: 1px solid var(–border);
-white-space: nowrap;
-}
-th:first-child { text-align: center; }
-td {
-padding: 8px 12px; text-align: right;
-border-bottom: 1px solid rgba(255,255,255,0.04);
-font-family: ‘Space Mono’, monospace; font-size: 11.5px;
-color: var(–text2);
-}
-td:first-child { text-align: center; color: var(–text3); font-family: inherit; }
-tr:hover td { background: rgba(255,255,255,0.02); }
-.td-general { color: var(–general) !important; }
-.td-pension { color: var(–pension) !important; }
-.td-diff-pos { color: var(–accent2) !important; }
+  /* Year table */
+  .year-table-wrap { overflow-x: auto; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    background: var(--surface2);
+    color: var(--text2); font-weight: 700;
+    padding: 9px 12px; text-align: right;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th:first-child { text-align: center; }
+  td {
+    padding: 8px 12px; text-align: right;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: 'Space Mono', monospace; font-size: 11.5px;
+    color: var(--text2);
+  }
+  td:first-child { text-align: center; color: var(--text3); font-family: inherit; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .td-general { color: var(--general) !important; }
+  .td-pension { color: var(--pension) !important; }
+  .td-diff-pos { color: var(--accent2) !important; }
 
-/* Disclaimer */
-.disclaimer {
-background: rgba(255,255,255,0.03); border: 1px solid var(–border);
-border-radius: 10px; padding: 14px 18px; margin-top: 20px;
-font-size: 11px; color: var(–text3); line-height: 1.8;
-}
+  /* Disclaimer */
+  .disclaimer {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px; margin-top: 20px;
+    font-size: 11px; color: var(--text3); line-height: 1.8;
+  }
 
-/* Tabs for chart */
-.chart-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-.ctab {
-padding: 6px 14px; border-radius: 20px; font-size: 12px;
-cursor: pointer; border: 1px solid var(–border);
-background: var(–surface2); color: var(–text2);
-transition: all 0.2s; font-weight: 600;
-}
-.ctab.active { background: var(–accent); border-color: var(–accent); color: #fff; }
+  /* Tabs for chart */
+  .chart-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .ctab {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px;
+    cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text2);
+    transition: all 0.2s; font-weight: 600;
+  }
+  .ctab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-/* Lump / DCA toggle */
-.mode-tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(–border); }
-.mtab {
-flex: 1; padding: 10px; text-align: center; cursor: pointer;
-font-size: 12px; font-weight: 700; transition: all 0.2s;
-background: var(–surface2); color: var(–text3);
-}
-.mtab.active { background: rgba(59,130,246,0.2); color: var(–accent); }
+  /* Lump / DCA toggle */
+  .mode-tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .mtab {
+    flex: 1; padding: 10px; text-align: center; cursor: pointer;
+    font-size: 12px; font-weight: 700; transition: all 0.2s;
+    background: var(--surface2); color: var(--text3);
+  }
+  .mtab.active { background: rgba(59,130,246,0.2); color: var(--accent); }
 
-.section-divider { height: 1px; background: var(–border); margin: 24px 0; }
+  .section-divider { height: 1px; background: var(--border); margin: 24px 0; }
 </style>
-
 </head>
 <body>
 <div class="wrapper">
@@ -294,7 +292,6 @@ background: var(–surface2); color: var(–text3);
   </div>
 
   <!-- ETF 선택 -->
-
   <div class="card">
     <div class="card-title">1 ETF 선택</div>
     <div class="etf-grid">
@@ -317,7 +314,6 @@ background: var(–surface2); color: var(–text3);
   </div>
 
   <!-- 투자 모드 -->
-
   <div class="card">
     <div class="card-title">2 투자 방식</div>
     <div class="mode-tabs" style="margin-bottom:18px;">
@@ -366,7 +362,6 @@ background: var(–surface2); color: var(–text3);
   </div>
 
   <!-- 세금 설정 -->
-
   <div class="card">
     <div class="card-title">3 세금 설정</div>
     <div class="tax-boxes">
@@ -401,56 +396,52 @@ background: var(–surface2); color: var(–text3);
     </div>
   </div>
 
-<button class="run-btn" onclick="simulate()">🚀 시뮬레이션 시작</button>
+  <button class="run-btn" onclick="simulate()">🚀 시뮬레이션 시작</button>
 
   <!-- RESULTS -->
-
   <div id="results">
     <div class="section-divider"></div>
     <div id="result-title" style="font-size:15px;font-weight:900;margin-bottom:20px;color:var(--text);"></div>
 
-```
-<!-- 일시금 결과 -->
-<div id="lump-section">
-  <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.05em;">💰 일시금 거치식</div>
-  <div class="compare-grid" id="lump-compare"></div>
-</div>
+    <!-- 일시금 결과 -->
+    <div id="lump-section">
+      <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.05em;">💰 일시금 거치식</div>
+      <div class="compare-grid" id="lump-compare"></div>
+    </div>
 
-<!-- 적립식 결과 -->
-<div id="dca-section" style="margin-top:20px;">
-  <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.05em;">📅 매달 적립식</div>
-  <div class="compare-grid" id="dca-compare"></div>
-</div>
+    <!-- 적립식 결과 -->
+    <div id="dca-section" style="margin-top:20px;">
+      <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:0.05em;">📅 매달 적립식</div>
+      <div class="compare-grid" id="dca-compare"></div>
+    </div>
 
-<!-- 차트 -->
-<div class="card" style="margin-top:20px;">
-  <div class="card-title">연도별 자산 성장</div>
-  <div class="chart-tabs" id="chart-tabs">
-    <div class="ctab active" onclick="switchChart('lump-chart')" id="ctab-lump">일시금</div>
-    <div class="ctab" onclick="switchChart('dca-chart')" id="ctab-dca">적립식</div>
-  </div>
-  <div class="chart-wrap" id="lump-chart"><canvas id="canvas-lump"></canvas></div>
-  <div class="chart-wrap" id="dca-chart" style="display:none;"><canvas id="canvas-dca"></canvas></div>
-</div>
+    <!-- 차트 -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">연도별 자산 성장</div>
+      <div class="chart-tabs" id="chart-tabs">
+        <div class="ctab active" onclick="switchChart('lump-chart')" id="ctab-lump">일시금</div>
+        <div class="ctab" onclick="switchChart('dca-chart')" id="ctab-dca">적립식</div>
+      </div>
+      <div class="chart-wrap" id="lump-chart"><canvas id="canvas-lump"></canvas></div>
+      <div class="chart-wrap" id="dca-chart" style="display:none;"><canvas id="canvas-dca"></canvas></div>
+    </div>
 
-<!-- 연도별 테이블 -->
-<div class="card" style="margin-top:0;">
-  <div class="card-title">연도별 상세 (일시금)</div>
-  <div class="year-table-wrap" id="lump-table"></div>
-</div>
-<div class="card" style="margin-top:0;">
-  <div class="card-title">연도별 상세 (적립식)</div>
-  <div class="year-table-wrap" id="dca-table"></div>
-</div>
+    <!-- 연도별 테이블 -->
+    <div class="card" style="margin-top:0;">
+      <div class="card-title">연도별 상세 (일시금)</div>
+      <div class="year-table-wrap" id="lump-table"></div>
+    </div>
+    <div class="card" style="margin-top:0;">
+      <div class="card-title">연도별 상세 (적립식)</div>
+      <div class="year-table-wrap" id="dca-table"></div>
+    </div>
 
-<div class="disclaimer">
-  ※ 본 시뮬레이터는 참고용 추정치로 투자 권유가 아닙니다.<br>
-  ※ 실제 수익률은 환율 변동, 운용 보수, 분배금 지급 시점, 세제 변경 등에 따라 달라질 수 있습니다.<br>
-  ※ 연저펀 분배금 선취 15.4%는 2025년 기준이며, 이후 세법 개정에 따라 변경될 수 있습니다.<br>
-  ※ 연간 250만원 공제(해외ETF 양도세)는 국내상장 해외ETF 매매차익에 적용되지 않습니다.
-</div>
-```
-
+    <div class="disclaimer">
+      ※ 본 시뮬레이터는 참고용 추정치로 투자 권유가 아닙니다.<br>
+      ※ 실제 수익률은 환율 변동, 운용 보수, 분배금 지급 시점, 세제 변경 등에 따라 달라질 수 있습니다.<br>
+      ※ 연저펀 분배금 선취 15.4%는 2025년 기준이며, 이후 세법 개정에 따라 변경될 수 있습니다.<br>
+      ※ 연간 250만원 공제(해외ETF 양도세)는 국내상장 해외ETF 매매차익에 적용되지 않습니다.
+    </div>
   </div>
 
 </div>
@@ -802,6 +793,5 @@ function switchChart(show) {
   else document.getElementById('ctab-dca').classList.add('active');
 }
 </script>
-
 </body>
 </html>
