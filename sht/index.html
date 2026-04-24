@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신혼희망타운 수익공유 모기지 vs 일반대출 비교</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fb;--surface:#fff;--surface2:#f0f3f9;
+  --border:#d1d9e6;--text:#1a2236;--text-sub:#4b5b7a;--text-dim:#8a97b0;
+  --blue:#1a6ef5;--blue-lt:#e8f0fe;--blue-md:#b3cfff;
+  --red:#d63031;--red-lt:#fff0f0;
+  --green:#0a8a4a;--green-lt:#e6f7ee;
+  --gold:#b87a00;--gold-lt:#fff8e1;
+  --purple:#7c3aed;--purple-lt:#f3eeff;
+  --radius:12px;--shadow:0 2px 12px rgba(26,34,54,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;padding:20px 14px 60px;font-size:14px;line-height:1.5}
+
+.header{background:linear-gradient(135deg,#1a6ef5,#0a47c4);border-radius:16px;padding:24px 20px;text-align:center;margin-bottom:18px;color:#fff}
+.header .badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:600;letter-spacing:.5px;margin-bottom:10px}
+.header h1{font-size:20px;font-weight:900;line-height:1.35}
+.header p{font-size:12px;opacity:.8;margin-top:6px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:700;color:var(--text-sub);text-transform:uppercase;letter-spacing:.4px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.bar{display:inline-block;width:4px;height:16px;border-radius:3px;flex-shrink:0}
+.bar-blue{background:var(--blue)}.bar-gold{background:var(--gold)}.bar-red{background:var(--red)}.bar-purple{background:var(--purple)}
+
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:12px;font-weight:600;color:var(--text-sub)}
+.input-wrap{position:relative;display:flex;align-items:center}
+input[type="number"],select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:10px 40px 10px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;outline:none;transition:border-color .18s,background .18s;-moz-appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button{display:none}
+input:focus,select:focus{border-color:var(--blue);background:#fff}
+.unit{position:absolute;right:11px;font-size:12px;font-weight:600;color:var(--text-dim);pointer-events:none}
+select{padding:10px 12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif}
+
+.slider-wrap{margin-top:4px}
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+input[type="range"]{flex:1;height:6px;accent-color:var(--purple);cursor:pointer}
+.slider-val{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:900;color:var(--purple);min-width:52px;text-align:right}
+.slider-hint{font-size:11px;color:var(--text-dim);line-height:1.7}
+
+.ltv-group{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px}
+.ltv-btn{padding:10px 4px;border-radius:8px;border:2px solid var(--border);background:var(--surface2);color:var(--text-sub);font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .15s;text-align:center}
+.ltv-btn:hover{border-color:var(--blue-md);background:var(--blue-lt);color:var(--blue)}
+.ltv-btn.active{border-color:var(--blue);background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(26,110,245,.3)}
+
+.info-box{background:var(--blue-lt);border:1.5px solid var(--blue-md);border-radius:10px;padding:12px;margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-item{display:flex;flex-direction:column;gap:3px}
+.info-label{font-size:11px;color:var(--text-sub);font-weight:500}
+.info-val{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--blue)}
+
+.rate-banner{background:var(--gold-lt);border:1.5px solid #f0d080;border-radius:10px;padding:10px 14px;margin-top:12px;display:flex;align-items:center;justify-content:space-between}
+.rate-banner-label{font-size:12px;font-weight:600;color:var(--gold)}
+.rate-banner-val{font-size:22px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--gold);text-align:right;line-height:1.3}
+
+.best-banner{background:linear-gradient(135deg,#f3eeff,#e8f0fe);border:2px solid var(--purple);border-radius:12px;padding:18px 16px;margin-bottom:14px;text-align:center}
+.best-banner .best-year{font-size:34px;font-weight:900;color:var(--purple);font-family:'JetBrains Mono',monospace;line-height:1.2}
+.best-banner .best-label{font-size:13px;color:var(--purple);font-weight:700;margin-top:6px}
+.best-banner .best-sub{font-size:12px;color:var(--text-sub);margin-top:8px;line-height:1.7}
+
+.share-table-wrap{overflow-x:auto}
+.share-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.share-table th{background:var(--surface2);padding:7px 5px;text-align:center;color:var(--text-sub);font-weight:700;border-bottom:2px solid var(--border);font-size:11px;white-space:nowrap}
+.share-table th:first-child{text-align:left;padding-left:8px}
+.share-table td{padding:5px;text-align:center;border-bottom:1px solid #eef0f5;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text)}
+.share-table td:first-child{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--text-sub);text-align:left;padding-left:8px;background:#f8f9fc;font-weight:500}
+.rate-lo{color:var(--green)}.rate-mid{color:var(--gold)}.rate-hi{color:var(--red)}
+.row-cur td{background:#eef4ff!important}
+.row-cur td:first-child{font-weight:700;color:var(--blue)!important;background:#ddeaff!important}
+.cell-cur{background:var(--blue)!important;color:#fff!important;border-radius:5px;font-weight:900!important}
+
+.calc-btn{width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:16px;font-weight:800;font-family:'Noto Sans KR',sans-serif;cursor:pointer;margin-bottom:22px;transition:all .18s;box-shadow:0 4px 16px rgba(26,110,245,.35);letter-spacing:-.3px}
+.calc-btn:hover{background:#1456d0;transform:translateY(-1px)}
+.calc-btn:active{transform:translateY(0)}
+
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sum-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center}
+.sum-card.win-a{border-color:var(--blue);background:var(--blue-lt)}
+.sum-card.win-b{border-color:var(--red);background:var(--red-lt)}
+.sum-label{font-size:11px;font-weight:600;color:var(--text-sub);margin-bottom:6px}
+.sum-amount{font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace}
+.sum-amount.ca{color:var(--blue)}.sum-amount.cb{color:var(--red)}
+.sum-sub{font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.5}
+.win-tag{display:inline-block;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;margin-top:6px}
+
+.toggle-row{display:flex;gap:8px;margin-bottom:12px}
+.tog-btn{flex:1;padding:9px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-sub);font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .15s}
+.tog-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+
+.ytable-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.ytable-head{background:var(--surface2);padding:12px 16px;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.ytable-head h3{font-size:13px;font-weight:700;color:var(--text)}
+.ytable-head span{font-size:11px;color:var(--text-dim)}
+.tscroll{overflow-x:auto}
+.ytable{width:100%;border-collapse:collapse;font-size:11px;min-width:760px}
+.ytable th{background:#eef2fb;padding:7px 5px;text-align:center;color:var(--text-sub);font-weight:700;font-size:10.5px;border-bottom:2px solid var(--border);white-space:nowrap}
+.ytable td{padding:6px 5px;text-align:right;border-bottom:1px solid #eef0f5;color:var(--text);font-size:11px}
+.ytable td:first-child{text-align:center;font-weight:700;color:var(--text-sub);background:#f8f9fc;border-right:1px solid var(--border);font-size:11px;white-space:nowrap}
+.ytable tr.row-a{background:#f0f6ff}
+.ytable tr.row-b{background:#fff5f5}
+.ytable tr.row-best td{background:#f3eeff!important;font-weight:700}
+.ytable tr.row-best td:first-child{background:#e8d5ff!important;color:var(--purple)!important}
+.ytable tr.row-final td{background:var(--gold-lt)!important;font-weight:700;border-top:2px solid #f0d080}
+.ytable tr.row-final td:first-child{background:#ffe8a0!important;color:var(--gold)!important}
+.num{font-family:'JetBrains Mono',monospace}
+.tc{color:var(--blue);font-weight:700}.tr2{color:var(--red);font-weight:700}
+.tg{color:var(--green);font-weight:700}.tp{color:var(--purple);font-weight:900}
+.adv-a{color:var(--blue);font-weight:700}.adv-b{color:var(--red);font-weight:700}
+
+.verdict-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.verdict-card h3{font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px}
+.vitem{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:8px;margin-bottom:10px;font-size:13px;line-height:1.7}
+.vitem.va{background:var(--blue-lt);border:1px solid var(--blue-md)}
+.vitem.vb{background:var(--red-lt);border:1px solid #f5b3b3}
+.vitem.vc{background:var(--green-lt);border:1px solid #8ed8b0}
+.vitem.vd{background:var(--gold-lt);border:1px solid #f0d080;font-size:12px}
+.vitem.ve{background:#f8f9fc;border:1px solid var(--border);font-size:12px}
+.vitem.vp{background:var(--purple-lt);border:1px solid #c4b5fd}
+.vitem .icon{font-size:18px;flex-shrink:0}
+.dim{color:var(--text-dim);font-size:11px;line-height:1.7}
+
+.hidden{display:none}
+.section-sep{text-align:center;font-size:11px;color:var(--text-dim);margin:6px 0 16px;letter-spacing:1px}
+
+/* 범례 */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-size:11px}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">📊 중도정산 최적 시점 시뮬레이터</div>
+  <h1>신혼희망타운 수익공유 모기지<br>감평가 상승 반영 비교분석</h1>
+  <p>매년 집값 상승 → 수익공유금 증가 → 중도정산 최적 시점 자동 도출</p>
+</div>
+
+<!-- 주택 가격 -->
+<div class="card">
+  <div class="card-title"><span class="bar bar-blue"></span>주택 가격 정보</div>
+  <div class="field-grid">
+    <div class="field">
+      <label>분양가 (취득가)</label>
+      <div class="input-wrap">
+        <input type="number" id="salePrice" value="37000" step="100">
+        <span class="unit">만원</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>현재 감정평가액</label>
+      <div class="input-wrap">
+        <input type="number" id="appraisalPrice" value="55000" step="100">
+        <span class="unit">만원</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <label style="display:block;margin-bottom:8px">연간 감정평가액 상승률 (복리)</label>
+    <div class="slider-wrap">
+      <div class="slider-row">
+        <input type="range" id="apprRiseSlider" min="0" max="10" step="0.1" value="3.8">
+        <span class="slider-val" id="apprRiseVal">3.8%</span>
+      </div>
+      <div class="slider-hint" id="apprRiseHint">계산 중...</div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-item">
+      <span class="info-label">현재 시세차익</span>
+      <span class="info-val" id="d_profit">–</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">수익공유 대출액</span>
+      <span class="info-val" id="d_loanA">–</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">30년 후 감평가 (예상)</span>
+      <span class="info-val" id="d_appr30">–</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">30년 후 시세차익 (예상)</span>
+      <span class="info-val" id="d_profit30">–</span>
+    </div>
+  </div>
+</div>
+
+<!-- 수익공유 조건 -->
+<div class="card">
+  <div class="card-title"><span class="bar bar-blue"></span>🔵 수익공유 모기지 조건</div>
+  <div class="field-grid">
+    <div class="field">
+      <label>금리 (고정)</label>
+      <div class="input-wrap">
+        <input type="number" id="rateA" value="1.3" step="0.1" min="0.1" max="5">
+        <span class="unit">%</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>대출기간</label>
+      <div class="input-wrap">
+        <select id="termA">
+          <option value="20">20년</option>
+          <option value="30" selected>30년</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="grid-column:1/-1">
+      <label>자녀 수 (정산시점 기준)</label>
+      <div class="input-wrap">
+        <select id="children">
+          <option value="0">0명</option>
+          <option value="1">1명</option>
+          <option value="2" selected>2명 이상</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px">
+    <label style="display:block;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-sub)">담보인정비율 (LTV)</label>
+    <div class="ltv-group">
+      <button class="ltv-btn" onclick="setLTV(30)" data-v="30">30%</button>
+      <button class="ltv-btn" onclick="setLTV(40)" data-v="40">40%</button>
+      <button class="ltv-btn" onclick="setLTV(50)" data-v="50">50%</button>
+      <button class="ltv-btn" onclick="setLTV(60)" data-v="60">60%</button>
+      <button class="ltv-btn active" onclick="setLTV(70)" data-v="70">70%</button>
+    </div>
+  </div>
+  <input type="hidden" id="ltv" value="70">
+  <div class="rate-banner">
+    <span class="rate-banner-label">만기 시 수익공유율</span>
+    <span class="rate-banner-val" id="rateDisplay">–</span>
+  </div>
+</div>
+
+<!-- 정산표 -->
+<div class="card">
+  <div class="card-title"><span class="bar bar-gold"></span>수익공유 정산표 (별표1 · 연도별)</div>
+  <div class="share-table-wrap">
+    <table class="share-table">
+      <thead>
+        <tr>
+          <th>상환연도</th>
+          <th>LTV70%<br>자0 자1 자2</th>
+          <th>LTV60%<br>자0 자1 자2</th>
+          <th>LTV50%<br>자0 자1 자2</th>
+          <th>LTV40%<br>자0 자1 자2</th>
+          <th>LTV30%<br>자0 자1 자2</th>
+        </tr>
+      </thead>
+      <tbody id="shareTableBody"></tbody>
+    </table>
+  </div>
+  <p style="font-size:11px;color:var(--text-dim);margin-top:8px">※ 출처: 신한은행 수익공유형 모기지 상품설명서 별표1 (2024.10 개정)</p>
+</div>
+
+<!-- 일반대출 조건 -->
+<div class="card">
+  <div class="card-title"><span class="bar bar-red"></span>🔴 갈아타기 일반대출 조건</div>
+  <div class="field-grid">
+    <div class="field">
+      <label>금리</label>
+      <div class="input-wrap">
+        <input type="number" id="rateB" value="4.0" step="0.1" min="1" max="10">
+        <span class="unit">%</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>대출기간</label>
+      <div class="input-wrap">
+        <select id="termB">
+          <option value="20">20년</option>
+          <option value="30" selected>30년</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div style="background:#fff5f5;border:1px solid #f5b3b3;border-radius:8px;padding:10px 12px;margin-top:12px;font-size:12px;color:var(--text-sub);line-height:1.8">
+    <strong>y년차 중도정산 시 총비용 비교 기준</strong><br>
+    🔵 수익공유 총비용 = y년까지 납입한 이자 합계 + <strong>그 시점 감평가</strong> 기준 수익공유금<br>
+    🔴 갈아타기 총비용 = y년까지 납입한 이자 합계 + 갈아타기 대출(잔액+공유금)의 <strong>이후 이자 합계</strong>
+  </div>
+</div>
+
+<button class="calc-btn" onclick="calculate()">🏆 중도정산 최적 시점 분석</button>
+
+<!-- 결과 -->
+<div id="resultSection" class="hidden">
+  <div class="section-sep">── 분석 결과 ──</div>
+
+  <div class="best-banner" id="bestBanner"></div>
+
+  <div class="summary-row" id="summaryCards"></div>
+
+  <div class="toggle-row">
+    <button class="tog-btn active" onclick="setView('table')" id="btnTable">📊 연도별 비교표</button>
+    <button class="tog-btn" onclick="setView('verdict')" id="btnVerdict">💡 종합 분석</button>
+  </div>
+
+  <div id="viewTable">
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#f3eeff;border:2px solid var(--purple)"></div><span>🏆 최적 시점</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:#f0f6ff"></div><span>수익공유 유리</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fff5f5"></div><span>갈아타기 유리</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--gold-lt);border:1px solid #f0d080"></div><span>만기</span></div>
+    </div>
+    <div class="ytable-wrap">
+      <div class="ytable-head">
+        <h3>연도별 중도정산 시 총비용 비교</h3>
+        <span>단위: 만원</span>
+      </div>
+      <div class="tscroll">
+        <table class="ytable">
+          <thead>
+            <tr>
+              <th>연차</th>
+              <th>그해<br>감평가</th>
+              <th>그해<br>시세차익</th>
+              <th>수익<br>공유율</th>
+              <th>그해<br>수익공유금</th>
+              <th>🔵 y년까지<br>납입이자</th>
+              <th>🔵 수익공유<br>총비용①</th>
+              <th>🔴 갈아타기<br>대출액</th>
+              <th>🔴 이후<br>이자합계</th>
+              <th>🔴 갈아타기<br>총비용②</th>
+              <th>절감액<br>①-②</th>
+              <th>판정</th>
+            </tr>
+          </thead>
+          <tbody id="yearTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewVerdict" class="hidden">
+    <div class="verdict-card" id="verdictCard"></div>
+  </div>
+</div>
+
+<script>
+// ── 공식 별표1 정산표 (신한은행 2024.10 개정) ──
+const RATE = {};
+
+RATE[70]={};
+for(let y=1;y<=9;y++) RATE[70][y]=[50,40,30];
+RATE[70][10]=[48,38,28];RATE[70][11]=[46,36,26];RATE[70][12]=[44,34,24];
+RATE[70][13]=[42,32,22];RATE[70][14]=[40,30,20];RATE[70][15]=[38,28,18];
+RATE[70][16]=[36,26,16];RATE[70][17]=[34,24,14];RATE[70][18]=[32,22,12];
+RATE[70][19]=[30,20,10];RATE[70][20]=[28,18,10];RATE[70][21]=[26,15,10];
+RATE[70][22]=[24,15,10];RATE[70][23]=[22,15,10];RATE[70][24]=[20,15,10];
+for(let y=25;y<=30;y++) RATE[70][y]=[20,15,10];
+
+RATE[60]={};
+for(let y=1;y<=9;y++) RATE[60][y]=[45,35,25];
+RATE[60][10]=[43,33,23];RATE[60][11]=[41,31,21];RATE[60][12]=[39,29,19];
+RATE[60][13]=[37,27,17];RATE[60][14]=[35,25,15];RATE[60][15]=[33,23,13];
+RATE[60][16]=[31,21,10];RATE[60][17]=[29,19,10];RATE[60][18]=[27,17,10];
+RATE[60][19]=[25,15,10];RATE[60][20]=[23,15,10];RATE[60][21]=[20,15,10];
+for(let y=22;y<=30;y++) RATE[60][y]=[20,15,10];
+
+RATE[50]={};
+for(let y=1;y<=9;y++) RATE[50][y]=[40,30,20];
+RATE[50][10]=[38,28,18];RATE[50][11]=[36,26,16];RATE[50][12]=[34,24,14];
+RATE[50][13]=[32,22,12];RATE[50][14]=[30,20,10];RATE[50][15]=[28,18,10];
+RATE[50][16]=[26,15,10];RATE[50][17]=[24,15,10];RATE[50][18]=[22,15,10];
+RATE[50][19]=[20,15,10];
+for(let y=20;y<=30;y++) RATE[50][y]=[20,15,10];
+
+RATE[40]={};
+for(let y=1;y<=9;y++) RATE[40][y]=[35,25,15];
+RATE[40][10]=[33,23,13];RATE[40][11]=[31,21,10];RATE[40][12]=[29,19,10];
+RATE[40][13]=[27,17,10];RATE[40][14]=[25,15,10];RATE[40][15]=[23,15,10];
+for(let y=16;y<=30;y++) RATE[40][y]=[20,15,10];
+
+RATE[30]={};
+for(let y=1;y<=9;y++) RATE[30][y]=[30,20,10];
+RATE[30][10]=[28,18,10];RATE[30][11]=[26,15,10];RATE[30][12]=[24,15,10];
+RATE[30][13]=[22,15,10];RATE[30][14]=[20,15,10];
+for(let y=15;y<=30;y++) RATE[30][y]=[20,15,10];
+
+function getRate(ltv,ch,year){
+  const y=Math.max(1,Math.min(30,year));
+  return RATE[ltv][y][Math.min(parseInt(ch),2)];
+}
+
+let currentLTV=70;
+
+function setLTV(v){
+  currentLTV=v;
+  document.getElementById('ltv').value=v;
+  document.querySelectorAll('.ltv-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.v)===v));
+  updateDerived();
+  renderShareTable();
+}
+
+function rateCls(v){return v<=10?'rate-lo':v<=25?'rate-mid':'rate-hi'}
+
+function renderShareTable(){
+  const ltv=currentLTV;
+  const ch=parseInt(document.getElementById('children').value);
+  const termA=parseInt(document.getElementById('termA').value);
+  const ltvList=[70,60,50,40,30];
+  let html='';
+  for(let y=1;y<=30;y++){
+    if(y>=2&&y<=9) continue;
+    const isCurRow=(y===termA)||(y===9&&termA<=9);
+    html+=`<tr class="${isCurRow?'row-cur':''}">`;
+    html+=`<td>${y<=9?'1~9년':y+'년'}</td>`;
+    ltvList.forEach(lv=>{
+      const rates=RATE[lv][y<=9?1:y];
+      [0,1,2].forEach(ci=>{
+        const v=rates[ci];
+        const isAct=isCurRow&&lv===ltv&&ci===ch;
+        html+=`<td class="${isAct?'cell-cur':rateCls(v)}">${v}%</td>`;
+      });
+    });
+    html+='</tr>';
+  }
+  document.getElementById('shareTableBody').innerHTML=html;
+}
+
+// ── 계산 헬퍼 ──
+function calcMonthly(p,r,n){
+  if(r===0) return p/n;
+  const m=r/100/12;
+  return p*m*Math.pow(1+m,n)/(Math.pow(1+m,n)-1);
+}
+// y년까지 납입한 이자 누계 (원리금균등)
+function calcCumInterest(principal,annualRate,totalMonths,yearN){
+  if(annualRate===0||principal<=0) return 0;
+  const r=annualRate/100/12;
+  const M=calcMonthly(principal,annualRate,totalMonths);
+  let bal=principal,tot=0;
+  const n=Math.min(yearN*12,totalMonths);
+  for(let m=0;m<n;m++){const i=bal*r;tot+=i;bal-=(M-i);}
+  return tot;
+}
+// y년 시점 대출 잔액
+function getLoanBalance(principal,annualRate,totalMonths,yearN){
+  if(annualRate===0) return Math.max(0,principal*(1-yearN*12/totalMonths));
+  if(principal<=0) return 0;
+  const r=annualRate/100/12;
+  const M=calcMonthly(principal,annualRate,totalMonths);
+  const n=Math.min(yearN*12,totalMonths);
+  return principal*Math.pow(1+r,n)-M*(Math.pow(1+r,n)-1)/r;
+}
+function fmt(n){return Math.round(n).toLocaleString('ko-KR')}
+function fmtW(n){return fmt(n)+'만원'}
+function R(n){return Math.round(n)}
+
+// ── 슬라이더 ──
+document.getElementById('apprRiseSlider').addEventListener('input',function(){
+  document.getElementById('apprRiseVal').textContent=parseFloat(this.value).toFixed(1)+'%';
+  updateDerived();
+});
+
+function updateDerived(){
+  const saleP =parseFloat(document.getElementById('salePrice').value)||0;
+  const apprP =parseFloat(document.getElementById('appraisalPrice').value)||0;
+  const rise  =parseFloat(document.getElementById('apprRiseSlider').value)||0;
+  const ltv   =currentLTV;
+  const ch    =document.getElementById('children').value;
+  const termA =parseInt(document.getElementById('termA').value);
+
+  const loanA  =Math.min(saleP*ltv/100,40000);
+  const profit =apprP-saleP;
+  const sr     =getRate(ltv,ch,termA);
+  const appr30 =apprP*Math.pow(1+rise/100,30);
+  const profit30=appr30-saleP;
+  const mult   =(appr30/apprP).toFixed(2);
+
+  document.getElementById('d_profit').textContent   =fmtW(profit);
+  document.getElementById('d_loanA').textContent    =fmtW(loanA)+' (LTV '+ltv+'%)';
+  document.getElementById('d_appr30').textContent   =fmtW(R(appr30))+' (×'+mult+')';
+  document.getElementById('d_profit30').textContent =fmtW(R(profit30));
+  document.getElementById('rateDisplay').textContent=sr+'%  ('+termA+'년·자녀'+ch+'명)';
+  document.getElementById('apprRiseVal').textContent=rise.toFixed(1)+'%';
+  document.getElementById('apprRiseHint').innerHTML =
+    `현재 감평 ${fmt(apprP)}만원 → 30년 후 약 <strong>${fmt(R(appr30))}만원</strong> (<strong>${mult}배</strong>) · 연 ${rise.toFixed(1)}% 복리 상승 가정`;
+}
+
+['salePrice','appraisalPrice','children','termA'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{updateDerived();renderShareTable();});
+});
+
+function setView(v){
+  document.getElementById('viewTable').classList.toggle('hidden',v!=='table');
+  document.getElementById('viewVerdict').classList.toggle('hidden',v!=='verdict');
+  document.getElementById('btnTable').classList.toggle('active',v==='table');
+  document.getElementById('btnVerdict').classList.toggle('active',v==='verdict');
+}
+
+// ── 메인 계산 ──
+function calculate(){
+  const saleP =parseFloat(document.getElementById('salePrice').value)||0;
+  const apprP =parseFloat(document.getElementById('appraisalPrice').value)||0;
+  const rise  =parseFloat(document.getElementById('apprRiseSlider').value)||0;
+  const rateA =parseFloat(document.getElementById('rateA').value)||1.3;
+  const rateB =parseFloat(document.getElementById('rateB').value)||4.0;
+  const termA =parseInt(document.getElementById('termA').value);
+  const termB =parseInt(document.getElementById('termB').value);
+  const ltv   =currentLTV;
+  const ch    =document.getElementById('children').value;
+
+  const loanA =Math.min(saleP*ltv/100,40000);
+  const mA    =calcMonthly(loanA,rateA,termA*12);
+
+  // ── 연도별 데이터 계산 ──
+  // 핵심 비교 기준:
+  //   수익공유 총비용(y) = y년까지 납입이자 + 그해 수익공유금
+  //                      (= "여기서 정산 종료 시 총 지출")
+  //   갈아타기 총비용(y) = y년까지 납입이자 + 갈아타기 이후 새 대출 이자합계
+  //                      (= "y년에 갈아타면 종료 시점까지 총 지출")
+  // → 갈아타기 총비용(y)이 더 작으면 갈아타기 유리
+
+  const rows_data=[];
+  let optY=null;
+  let maxSaving=-Infinity;
+
+  for(let y=1;y<=termA;y++){
+    const apprY   = apprP * Math.pow(1+rise/100, y);   // y년 후 감평가
+    const profitY = apprY - saleP;                      // y년 시세차익
+    const srY     = getRate(ltv, ch, y);                // 그해 수익공유율
+    const shareY  = profitY > 0 ? profitY * srY / 100 : 0; // 그해 수익공유금
+
+    // y년까지 수익공유 대출 납입이자 누계
+    const cumIntA = calcCumInterest(loanA, rateA, termA*12, y);
+
+    // 🔵 수익공유 총비용 = y년까지 납입이자 + 그해 수익공유금
+    const totalA  = cumIntA + shareY;
+
+    // 🔴 갈아타기: y년 시점 잔액 + 그해 수익공유금 → 새 대출
+    const balA    = Math.max(0, getLoanBalance(loanA, rateA, termA*12, y));
+    const loanBY  = balA + shareY;
+    // 새 대출의 termB년간 총이자
+    const newIntB = loanBY > 0 ? calcCumInterest(loanBY, rateB, termB*12, termB) : 0;
+
+    // 🔴 갈아타기 총비용 = y년까지 납입이자 + 새 대출 이자합계
+    const totalB  = cumIntA + newIntB;
+
+    // 절감액 = 수익공유 총비용 - 갈아타기 총비용
+    // 양수 = 갈아타기가 저렴(절감), 음수 = 수익공유 유지가 저렴
+    const saving  = totalA - totalB;
+
+    rows_data.push({y, apprY, profitY, srY, shareY, cumIntA, totalA, balA, loanBY, newIntB, totalB, saving});
+
+    // 갈아타기 절감액이 최대인 시점 = 최적
+    if(saving > maxSaving){
+      maxSaving = saving;
+      if(saving > 0) optY = y;
+    }
+  }
+
+  // ── 최적 시점 배너 ──
+  if(optY){
+    const d=rows_data[optY-1];
+    document.getElementById('bestBanner').innerHTML=`
+      <div class="best-year">🏆 ${optY}년차 중도정산</div>
+      <div class="best-label">이 시점에 갈아타기 시 총비용 절감 최대</div>
+      <div class="best-sub">
+        그해 감평가 <strong>${fmt(R(d.apprY))}만원</strong>
+        · 시세차익 <strong>${fmt(R(d.profitY))}만원</strong>
+        · 수익공유율 <strong>${d.srY}%</strong>
+        · 수익공유금 <strong>${fmt(R(d.shareY))}만원</strong><br>
+        수익공유 총비용 <strong>${fmt(R(d.totalA))}만원</strong> vs 갈아타기 총비용 <strong>${fmt(R(d.totalB))}만원</strong><br>
+        → 갈아타기 시 <strong style="color:var(--purple);font-size:14px">${fmt(R(maxSaving))}만원</strong> 절감
+      </div>
+    `;
+  } else {
+    document.getElementById('bestBanner').innerHTML=`
+      <div class="best-year" style="color:var(--blue);font-size:26px">만기까지 유지 유리</div>
+      <div class="best-label" style="color:var(--blue)">수익공유 모기지가 전 기간 유리</div>
+      <div class="best-sub">집값이 올라도 낮은 금리(${rateA}%)의 이점이 수익공유금 증가를 상쇄합니다</div>
+    `;
+  }
+
+  // ── 요약 카드 ──
+  const matData = rows_data[termA-1];
+  const aWinsMat = matData.totalA < matData.totalB;
+  document.getElementById('summaryCards').innerHTML=`
+    <div class="sum-card ${aWinsMat?'win-a':''}">
+      <div class="sum-label">🔵 수익공유 만기 유지 총비용</div>
+      <div class="sum-amount ca">${fmt(R(matData.totalA))}</div>
+      <div class="sum-sub">이자 ${fmt(R(matData.cumIntA))} + 공유금 ${fmt(R(matData.shareY))}만<br>감평 ${fmt(R(matData.apprY))}만 · ${matData.srY}%</div>
+      ${aWinsMat?'<div class="win-tag">✓ 만기 기준 유리</div>':''}
+    </div>
+    <div class="sum-card ${!aWinsMat?'win-b':''}">
+      <div class="sum-label">🔴 만기 갈아타기 총비용</div>
+      <div class="sum-amount cb">${fmt(R(matData.totalB))}</div>
+      <div class="sum-sub">기납이자 ${fmt(R(matData.cumIntA))} + 신규이자 ${fmt(R(matData.newIntB))}만<br>대출 ${fmt(R(matData.loanBY))}만 · ${rateB}% · ${termB}년</div>
+      ${!aWinsMat?'<div class="win-tag" style="background:var(--red)">✓ 만기 기준 유리</div>':''}
+    </div>
+  `;
+
+  // ── 연도별 표 ──
+  let rows='';
+  rows_data.forEach(d=>{
+    const {y,apprY,profitY,srY,shareY,cumIntA,totalA,loanBY,newIntB,totalB,saving}=d;
+    const isOpt =(y===optY);
+    const isFin =(y===termA);
+
+    let rowCls='';
+    if(isOpt) rowCls='row-best';
+    else if(isFin) rowCls='row-final';
+    else if(saving>0) rowCls='row-b';
+    else rowCls='row-a';
+
+    let advLabel='';
+    if(isOpt&&isFin)     advLabel=`<span class="tp">🏆 최적=만기</span>`;
+    else if(isOpt)       advLabel=`<span class="tp">🏆 최적</span>`;
+    else if(isFin)       advLabel=`<span style="color:var(--gold);font-weight:700">⏹ 만기</span>`;
+    else if(saving>0)    advLabel=`<span class="adv-b">🔴 갈아타기</span>`;
+    else                 advLabel=`<span class="adv-a">🔵 수익공유</span>`;
+
+    const srStyle = srY<=10 ? 'color:var(--green);font-weight:900'
+                  : srY<=25 ? 'color:var(--gold);font-weight:900'
+                  : 'color:var(--red);font-weight:900';
+    // 절감액: 양수=갈아타기 절감(빨강 배경이 유리), 음수=수익공유 유리
+    const savStyle= saving>0 ? 'color:var(--red);font-weight:700'
+                  : saving<0 ? 'color:var(--blue);font-weight:700'
+                  : 'color:var(--text-dim)';
+
+    rows+=`<tr class="${rowCls}">
+      <td>${isOpt?'🏆 ':isFin?'⏹ ':''}${y}년</td>
+      <td class="num">${fmt(R(apprY))}</td>
+      <td class="num">${fmt(R(profitY))}</td>
+      <td class="num" style="${srStyle}">${srY}%</td>
+      <td class="num tc">${fmt(R(shareY))}</td>
+      <td class="num tc">${fmt(R(cumIntA))}</td>
+      <td class="num tc" style="font-weight:900">${fmt(R(totalA))}</td>
+      <td class="num tr2">${fmt(R(loanBY))}</td>
+      <td class="num tr2">${fmt(R(newIntB))}</td>
+      <td class="num tr2" style="font-weight:900">${fmt(R(totalB))}</td>
+      <td class="num" style="${savStyle}">${saving>0?'+':''}${fmt(R(saving))}</td>
+      <td>${advLabel}</td>
+    </tr>`;
+  });
+  document.getElementById('yearTableBody').innerHTML=rows;
+
+  // ── 종합 분석 ──
+  let lastSr=getRate(ltv,ch,1);
+  const breaks=[];
+  for(let y=2;y<=termA;y++){
+    const sr=getRate(ltv,ch,y);
+    if(sr!==lastSr){breaks.push({y,sr});lastSr=sr;}
+  }
+  const breakHtml=[`1년 <strong>${getRate(ltv,ch,1)}%</strong>`,...breaks.map(b=>`→ ${b.y}년 <strong>${b.sr}%</strong>`)].join(' ');
+
+  document.getElementById('verdictCard').innerHTML=`
+    <h3>📌 종합 분석 결과</h3>
+    ${optY?`
+    <div class="vitem vp">
+      <span class="icon">🏆</span>
+      <div>
+        <strong>${optY}년차 중도정산이 최적</strong><br>
+        그해 감평가 <strong>${fmt(R(rows_data[optY-1].apprY))}만원</strong>
+        · 시세차익 <strong>${fmt(R(rows_data[optY-1].profitY))}만원</strong><br>
+        수익공유율 <strong>${rows_data[optY-1].srY}%</strong>
+        → 수익공유금 <strong>${fmt(R(rows_data[optY-1].shareY))}만원</strong><br>
+        갈아타기 대출 <strong>${fmt(R(rows_data[optY-1].loanBY))}만원</strong>
+        → 이후 총이자 <strong>${fmt(R(rows_data[optY-1].newIntB))}만원</strong><br>
+        절감액 <strong style="color:var(--purple);font-size:14px">${fmt(R(maxSaving))}만원</strong>
+      </div>
+    </div>`:`
+    <div class="vitem va">
+      <span class="icon">🔵</span>
+      <div><strong>전 기간 수익공유 유지가 유리</strong><br>집값 연 ${rise.toFixed(1)}% 상승해도 금리 ${rateA}% 이점이 더 큽니다</div>
+    </div>`}
+    <div class="vitem va">
+      <span class="icon">🔵</span>
+      <div>
+        <strong>수익공유 만기 유지 (${termA}년)</strong><br>
+        월납입 <strong>${fmt(R(mA))}만원</strong> · 금리 ${rateA}%<br>
+        만기 감평가 <strong>${fmt(R(matData.apprY))}만원</strong> (현재의 ${(matData.apprY/apprP).toFixed(2)}배)<br>
+        만기 수익공유율 <strong>${matData.srY}%</strong> · 수익공유금 <strong>${fmt(R(matData.shareY))}만원</strong><br>
+        <span style="color:var(--blue);font-weight:800;font-size:14px">총 비용: ${fmt(R(matData.totalA))}만원</span>
+      </div>
+    </div>
+    <div class="vitem vb">
+      <span class="icon">🔴</span>
+      <div>
+        <strong>만기 시점 갈아타기</strong><br>
+        대출액 <strong>${fmt(R(matData.loanBY))}만원</strong>
+        (잔액 ${fmt(R(matData.balA))} + 공유금 ${fmt(R(matData.shareY))})<br>
+        이후 ${termB}년 이자 <strong>${fmt(R(matData.newIntB))}만원</strong> · ${rateB}%<br>
+        <span style="color:var(--red);font-weight:800;font-size:14px">총 비용: ${fmt(R(matData.totalB))}만원</span>
+      </div>
+    </div>
+    <div class="vitem ve">
+      <span class="icon">📋</span>
+      <div>
+        <strong>수익공유율 변동 이력 (LTV ${ltv}% · 자녀 ${ch}명)</strong><br>
+        ${breakHtml}
+      </div>
+    </div>
+    <div class="vitem vd">
+      <span class="icon">⚠️</span>
+      <div class="dim">
+        ※ 감평가는 실제 정산 시 기금 지정 감정평가기관 시세감정 기준 적용<br>
+        ※ 조기상환은 대출 취급일로부터 <strong>3년 경과 후</strong>부터 가능<br>
+        ※ 집값 하락 시 손실은 100% 입주자 부담 (기금 손실 미분담)<br>
+        ※ 일반대출 금리·한도는 은행 심사 결과에 따라 다를 수 있음
+      </div>
+    </div>
+  `;
+
+  document.getElementById('resultSection').classList.remove('hidden');
+  document.getElementById('resultSection').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// 초기화
+renderShareTable();
+updateDerived();
+</script>
+</body>
+</html>
