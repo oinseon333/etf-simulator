@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대구 2박3일 여행 플래너</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0e0c09;
+  --s1:#181410;
+  --s2:#211d16;
+  --s3:#2a241b;
+  --border:#3d3526;
+  --gold:#d4a843;
+  --gold2:#f0c96a;
+  --gold-dim:rgba(212,168,67,.13);
+  --red:#c94535;
+  --green:#4e8c62;
+  --sky:#3d7fa8;
+  --purple:#7a5ca8;
+  --text:#ede6d8;
+  --muted:#8a7a65;
+  --faint:#4a3f30;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+header{
+  position:relative;padding:2.8rem 1.4rem 2.2rem;text-align:center;overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 100% 80% at 50% -10%,rgba(212,168,67,.22) 0%,transparent 65%),
+    repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(212,168,67,.025) 48px,rgba(212,168,67,.025) 49px),
+    repeating-linear-gradient(90deg,transparent,transparent 48px,rgba(212,168,67,.025) 48px,rgba(212,168,67,.025) 49px);
+}
+.hbadge{
+  position:relative;display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--gold);padding:.28rem .9rem;border-radius:20px;
+  border:1px solid rgba(212,168,67,.35);background:rgba(212,168,67,.08);
+  margin-bottom:.9rem;
+}
+header h1{
+  position:relative;font-family:'Noto Serif KR',serif;
+  font-size:clamp(1.7rem,5.5vw,2.6rem);font-weight:900;line-height:1.18;
+  margin-bottom:.55rem;
+}
+header h1 em{color:var(--gold);font-style:normal}
+header p{position:relative;color:var(--muted);font-size:.83rem;line-height:1.75;font-weight:300}
+.must-strip{
+  position:relative;display:inline-flex;align-items:center;gap:.5rem;flex-wrap:wrap;justify-content:center;
+  margin-top:1.1rem;padding:.6rem 1.1rem;
+  background:var(--gold-dim);border:1px solid rgba(212,168,67,.28);border-radius:10px;
+  font-size:.73rem;color:var(--gold2);line-height:1.6;
+}
+.must-strip strong{font-weight:700;display:block;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7;margin-bottom:.15rem}
+
+/* TAB NAV */
+.nav-wrap{
+  position:sticky;top:0;z-index:100;
+  background:rgba(14,12,9,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:.75rem 1rem;
+}
+.nav{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.nav::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;min-width:68px;
+  display:flex;flex-direction:column;align-items:center;gap:.15rem;
+  padding:.5rem .9rem;border-radius:11px;
+  border:1.5px solid var(--border);background:var(--s1);
+  color:var(--muted);font-family:'Noto Sans KR',sans-serif;
+  font-size:.7rem;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.tab .n{font-family:'Noto Serif KR',serif;font-size:1.05rem;font-weight:900;line-height:1;color:var(--faint);transition:color .18s}
+.tab:hover{border-color:var(--gold);color:var(--gold2)}
+.tab:hover .n{color:var(--gold)}
+.tab.on{background:var(--gold);border-color:var(--gold);color:var(--bg);box-shadow:0 4px 18px rgba(212,168,67,.38)}
+.tab.on .n{color:var(--bg)}
+
+/* PANEL */
+.panel{display:none;padding:1.2rem 1rem 4rem;animation:up .3s ease}
+.panel.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* COURSE CARD */
+.ccard{
+  background:var(--s2);border:1px solid var(--border);border-radius:16px;
+  padding:1.25rem 1.3rem;margin-bottom:1.5rem;position:relative;overflow:hidden;
+}
+.ccard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2.5px;
+  background:linear-gradient(90deg,var(--gold),var(--gold2) 60%,transparent);
+}
+.ccard h2{font-family:'Noto Serif KR',serif;font-size:1.08rem;font-weight:700;margin-bottom:.4rem}
+.ccard .cd{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:.75rem}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.ctag{
+  font-size:.66rem;font-weight:700;padding:.2rem .6rem;border-radius:20px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);
+}
+.ctag.hi{background:var(--gold-dim);border-color:rgba(212,168,67,.38);color:var(--gold2)}
+
+/* DAY BLOCK */
+.dblock{margin-bottom:1.6rem}
+.drow{display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem}
+.dpill{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.28rem .8rem;border-radius:20px;
+  background:var(--s3);border:1px solid var(--border);
+  font-size:.7rem;font-weight:700;color:var(--gold);letter-spacing:.06em;
+}
+.dtitle{font-size:.78rem;color:var(--faint);font-weight:500}
+
+/* SPOTS */
+.spots{display:flex;flex-direction:column;gap:.6rem}
+.spot{
+  background:var(--s3);border:1px solid var(--border);border-radius:13px;
+  padding:.95rem 1.05rem;display:flex;gap:.8rem;align-items:flex-start;
+  position:relative;transition:border-color .18s,transform .15s;
+}
+.spot:hover{border-color:rgba(212,168,67,.3);transform:translateX(3px)}
+.spot.must{
+  border-color:rgba(212,168,67,.45);
+  background:linear-gradient(135deg,#221e14 0%,#2a2412 100%);
+}
+.spot.must::after{
+  content:'⭐ 필수';position:absolute;top:.55rem;right:.7rem;
+  font-size:.6rem;font-weight:700;color:var(--gold);letter-spacing:.07em;
+}
+.snum{
+  flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  background:var(--s2);border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:700;color:var(--muted);margin-top:.1rem;
+}
+.spot.must .snum{background:var(--gold-dim);border-color:rgba(212,168,67,.5);color:var(--gold)}
+.sbody{flex:1;min-width:0}
+.stop{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin-bottom:.2rem}
+.sname{font-size:.92rem;font-weight:700;color:var(--text);line-height:1.2}
+.spot.must .sname{color:var(--gold2)}
+.sbadge{font-size:.6rem;font-weight:700;padding:.14rem .5rem;border-radius:20px;letter-spacing:.04em}
+.b-food{background:rgba(201,69,53,.2);color:#f09080;border:1px solid rgba(201,69,53,.3)}
+.b-tour{background:rgba(78,140,98,.18);color:#80c99a;border:1px solid rgba(78,140,98,.3)}
+.b-cafe{background:rgba(61,127,168,.18);color:#80c0e4;border:1px solid rgba(61,127,168,.3)}
+.b-shop{background:rgba(122,92,168,.18);color:#c0a0e8;border:1px solid rgba(122,92,168,.3)}
+.b-play{background:rgba(212,168,67,.18);color:var(--gold2);border:1px solid rgba(212,168,67,.3)}
+.sdesc{font-size:.78rem;color:var(--muted);line-height:1.65}
+.smeta{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
+.sm{font-size:.67rem;color:var(--faint);display:flex;align-items:center;gap:.2rem}
+
+/* connector line */
+.spots .spot:not(:last-child)::before{
+  content:'';position:absolute;bottom:-.6rem;left:1.55rem;
+  width:1.5px;height:.6rem;background:var(--border);
+}
+
+/* TIP */
+.tip{
+  background:var(--s2);border:1px solid var(--border);
+  border-left:3px solid var(--gold);border-radius:10px;
+  padding:.85rem 1.1rem;margin-top:1rem;
+  font-size:.78rem;color:var(--muted);line-height:1.75;
+}
+.tip strong{color:var(--gold2);font-weight:700}
+
+@media(min-width:460px){
+  .panel{padding:1.4rem 1.4rem 4rem}
+  header{padding:3.2rem 1.8rem 2.8rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbadge">🚆 동대구 SRT · 반월당역 베이스</div>
+  <h1>대구 <em>2박 3일</em><br>아이와 떠나는 여행</h1>
+  <p>초등 고학년 동반 · 자차 없이 지하철+버스로 완성<br>5가지 테마 코스 중 취향대로 골라보세요</p>
+  <div class="must-strip">
+    <strong>★ 모든 코스 공통 필수 방문지</strong>
+    더현대대구 &nbsp;·&nbsp; 왕거미식당 (1일차 저녁) &nbsp;·&nbsp; 서문시장 &nbsp;·&nbsp; 반고개오징어회무침
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <div class="nav">
+    <button class="tab on" onclick="go(0,this)"><span class="n">01</span>역사탐방</button>
+    <button class="tab"    onclick="go(1,this)"><span class="n">02</span>놀이+자연</button>
+    <button class="tab"    onclick="go(2,this)"><span class="n">03</span>쇼핑미식</button>
+    <button class="tab"    onclick="go(3,this)"><span class="n">04</span>한방+수성</button>
+    <button class="tab"    onclick="go(4,this)"><span class="n">05</span>예술+시장</button>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL 01 역사탐방 ═══════════ -->
+<div class="panel on" id="p0">
+  <div class="ccard">
+    <h2>📚 코스 01 — 역사탐방 + 대구 맛 정복</h2>
+    <p class="cd">대구 근현대 역사를 아이와 함께 걸으며 배우는 코스. 무료 관광지가 많고 반월당역 도보권에 밀집되어 있어 이동이 편해요.</p>
+    <div class="tags">
+      <span class="ctag hi">★ 필수 4곳 포함</span>
+      <span class="ctag">역사학습</span><span class="ctag">무료관광 多</span><span class="ctag">도보 위주</span>
+    </div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌅 1일차</span>
+      <span class="dtitle">도착 → 중구 역사골목 → 왕거미</span>
+    </div>
+    <div class="spots">
+      <div class="spot">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🍜 남문낭작만두</span><span class="sbadge b-food">점심</span></div>
+          <div class="sdesc">대구 10미 납작만두 원조. 유리면 납작만두+국물 조합. 6:30 마감 주의, 일요일 휴무.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 도보 5분</span><span class="sm">💰 1인 8,000원~</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🌿 청라언덕 & 계산성당</span><span class="sbadge b-tour">관광</span></div>
+          <div class="sdesc">3.1운동 역사 코스. 선교사 가옥·90계단·계산성당. 무료, 아이 역사 학습으로 딱.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 도보 10분</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏛️ 대구 근대역사관</span><span class="sbadge b-tour">박물관</span></div>
+          <div class="sdesc">1932년 일제강점기 건물 활용. 체험 전시 다양. 무료 입장. 월요일 휴무.</div>
+          <div class="smeta"><span class="sm">📍 청라언덕 인근</span><span class="sm">🎫 무료</span><span class="sm">⏰ 09:00~18:00</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">4</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🕷️ 왕거미식당</span><span class="sbadge b-food">저녁 필수</span></div>
+          <div class="sdesc">대구 막창 원조 골목의 전설. 부드럽고 고소한 막창 구이. 웨이팅 있으니 오픈 시간에 맞춰 방문 권장.</div>
+          <div class="smeta"><span class="sm">📍 안지랑 막창골목</span><span class="sm">🚇 2호선 안지랑역</span><span class="sm">⏰ 저녁 영업</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">☀️ 2일차</span>
+      <span class="dtitle">더현대대구 → 김광석길 → 서문시장</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏬 더현대대구</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">대구 최대 규모 백화점. 아이와 F&B 층 구경 및 쇼핑. 브런치 카페도 훌륭해요.</div>
+          <div class="smeta"><span class="sm">📍 대구역 인근</span><span class="sm">🚇 1호선 대구역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🎨 김광석 다시그리기 길</span><span class="sbadge b-tour">관광</span></div>
+          <div class="sdesc">방천시장 옆 벽화골목. 24시간 무료. 아이도 벽화·포토존 구경 재미있어요.</div>
+          <div class="smeta"><span class="sm">📍 방천시장 옆</span><span class="sm">🎫 무료 24시간</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏮 서문시장</span><span class="sbadge b-tour">전통시장</span></div>
+          <div class="sdesc">대구 최대 전통시장. 칼국수·야시장 먹거리 풍성. 야시장은 화~일 저녁 운영.</div>
+          <div class="smeta"><span class="sm">📍 서문시장역</span><span class="sm">🚇 3호선 서문시장역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌇 3일차</span>
+      <span class="dtitle">반고개 → 동성로 → 귀가</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦑 반고개오징어회무침</span><span class="sbadge b-food">점심 필수</span></div>
+          <div class="sdesc">대구 명물 오징어회무침. 쫄깃한 오징어에 매콤달콤 양념. 반고개역 인근 노포 골목.</div>
+          <div class="smeta"><span class="sm">📍 반고개역 인근</span><span class="sm">🚇 1호선 반고개역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🛍️ 동성로 쇼핑거리</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">대구 중심 쇼핑 거리. 아이와 마지막 기념품 쇼핑. 대현 프리몰 지하상가도 추천.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 도보 5분</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🍱 하지메카츠</span><span class="sbadge b-food">저녁</span></div>
+          <div class="sdesc">바삭한 일본식 돈카츠. 아이가 좋아하는 메뉴. 반월당역 도보 3분. 예약 필수.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 3분</span><span class="sm">📞 예약 권장</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip"><strong>💡 팁:</strong> 1일차 왕거미식당은 안지랑역(2호선)에서 도보 5분. 웨이팅이 길 수 있으니 오픈 직전 도착을 추천해요. 낭작만두는 일요일 휴무이므로 일정 시작 요일 확인 필수!</div>
+</div>
+
+<!-- ═══════════ PANEL 02 놀이+자연 ═══════════ -->
+<div class="panel" id="p1">
+  <div class="ccard">
+    <h2>🎢 코스 02 — 이월드+앞산+자연</h2>
+    <p class="cd">초등학생 아이가 가장 신나할 놀이공원과 케이블카 코스. 체력 소모가 많은 날을 2일차에 몰아넣어 효율적으로 구성했어요.</p>
+    <div class="tags">
+      <span class="ctag hi">★ 필수 4곳 포함</span>
+      <span class="ctag">아이 최고</span><span class="ctag">놀이공원</span><span class="ctag">자연경관</span>
+    </div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌅 1일차</span>
+      <span class="dtitle">도착 → 더현대대구 → 왕거미</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏬 더현대대구</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">도착 후 짐 풀고 더현대대구로. 식사·쇼핑·구경. 아이와 F&B 탐방으로 첫날 여유롭게 시작.</div>
+          <div class="smeta"><span class="sm">📍 대구역 인근</span><span class="sm">🚇 1호선 대구역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🛍️ 동성로 산책</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">대구 중심 번화가 산책. 저녁 전 가볍게 구경. 분식·길거리 음식 맛보기 좋아요.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 도보</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🕷️ 왕거미식당</span><span class="sbadge b-food">저녁 필수</span></div>
+          <div class="sdesc">대구 막창의 전설. 첫날 저녁을 화려하게 장식. 오픈 시간 맞춰 웨이팅 최소화.</div>
+          <div class="smeta"><span class="sm">📍 안지랑 막창골목</span><span class="sm">🚇 2호선 안지랑역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">☀️ 2일차</span>
+      <span class="dtitle">이월드 → 83타워 → 앞산 케이블카</span>
+    </div>
+    <div class="spots">
+      <div class="spot">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🎢 이월드 (E-World)</span><span class="sbadge b-play">놀이공원</span></div>
+          <div class="sdesc">대구 대표 놀이공원. 오전 오픈 직후 방문 시 줄이 적음. 아이 최애 코스!</div>
+          <div class="smeta"><span class="sm">📍 반월당역→730번 버스 20분</span><span class="sm">⏰ 10:00~21:00</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🗼 대구 83타워</span><span class="sbadge b-tour">전망</span></div>
+          <div class="sdesc">이월드 내 위치. 78층 전망대 무료 입장. 대구 전경 한눈에 조망.</div>
+          <div class="smeta"><span class="sm">📍 이월드 내</span><span class="sm">🎫 전망대 무료</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🚡 앞산 케이블카 + 전망대</span><span class="sbadge b-play">체험</span></div>
+          <div class="sdesc">왕복 14,000원. 케이블카 탑승 자체가 아이에게 즐거운 체험. 일몰 전 하산 권장.</div>
+          <div class="smeta"><span class="sm">📍 앞산공원 버스 정류장</span><span class="sm">💰 왕복 14,000원</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌇 3일차</span>
+      <span class="dtitle">서문시장 → 반고개 → 귀가</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏮 서문시장</span><span class="sbadge b-tour">전통시장</span></div>
+          <div class="sdesc">대구 전통시장. 칼국수·순대·튀김 등 먹거리 탐방. 아이와 시장 구경.</div>
+          <div class="smeta"><span class="sm">📍 서문시장역</span><span class="sm">🚇 3호선 서문시장역</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦑 반고개오징어회무침</span><span class="sbadge b-food">점심 필수</span></div>
+          <div class="sdesc">대구 명물 오징어회무침. 쫄깃하고 매콤달콤. 귀가 전 마지막 대구 맛 도장깨기.</div>
+          <div class="smeta"><span class="sm">📍 반고개역 인근</span><span class="sm">🚇 1호선 반고개역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">☕ T Class Coffee</span><span class="sbadge b-cafe">카페</span></div>
+          <div class="sdesc">대구 유명 카페. 크레이프 케이크·싱글오리진 커피. 여행 마무리 달달하게.</div>
+          <div class="smeta"><span class="sm">📍 동성로 인근</span><span class="sm">⏰ 10:00~22:50</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip"><strong>💡 팁:</strong> 이월드는 오전 10시 오픈 직후가 줄이 가장 짧아요. 앞산 케이블카 막차 시간을 꼭 확인하고 일몰 30분 전에는 하산 시작을 권장해요.</div>
+</div>
+
+<!-- ═══════════ PANEL 03 쇼핑미식 ═══════════ -->
+<div class="panel" id="p2">
+  <div class="ccard">
+    <h2>🍽️ 코스 03 — 쇼핑 + 미식 집중 코스</h2>
+    <p class="cd">대구의 먹거리와 쇼핑을 집중 공략하는 코스. 동성로·더현대·서문시장을 연결하고, 대구만의 독특한 음식 문화를 최대한 체험해요.</p>
+    <div class="tags">
+      <span class="ctag hi">★ 필수 4곳 포함</span>
+      <span class="ctag">맛집 집중</span><span class="ctag">쇼핑</span><span class="ctag">대구 10미</span>
+    </div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌅 1일차</span>
+      <span class="dtitle">도착 → 동성로 탐방 → 왕거미</span>
+    </div>
+    <div class="spots">
+      <div class="spot">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🍜 남문낭작만두</span><span class="sbadge b-food">점심</span></div>
+          <div class="sdesc">대구 10미 납작만두. 도착 후 첫 끼로 현지 분위기 바로 흡수. 일요일 휴무 주의.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 5분</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🛍️ 동성로 + 대현 프리몰</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">동성로 지하 쇼핑몰. 저렴한 의류·잡화 가득. 아이 옷·악세서리 구경.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 직결</span><span class="sm">⏰ 11:00~22:00</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🍡 동성로 떡볶이</span><span class="sbadge b-food">간식</span></div>
+          <div class="sdesc">대구 로컬 전설 분식. 납작만두+떡볶이+순대 조합. 아이가 신나하는 간식 타임.</div>
+          <div class="smeta"><span class="sm">📍 동성로 내</span><span class="sm">💰 1인 7,000원~</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">4</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🕷️ 왕거미식당</span><span class="sbadge b-food">저녁 필수</span></div>
+          <div class="sdesc">대구 안지랑 막창골목 터줏대감. 두툼하고 부드러운 막창 구이. 참기름·파무침 조합 일품.</div>
+          <div class="smeta"><span class="sm">📍 안지랑역 도보 5분</span><span class="sm">🚇 2호선 안지랑역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">☀️ 2일차</span>
+      <span class="dtitle">더현대대구 → 서문시장 야시장</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏬 더현대대구</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">대구 최고 백화점. 브런치 카페 + 쇼핑 풀코스. 아이와 반나절은 충분히 보낼 수 있어요.</div>
+          <div class="smeta"><span class="sm">📍 대구역 인근</span><span class="sm">🚇 1호선 대구역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🎨 김광석 다시그리기 길</span><span class="sbadge b-tour">관광</span></div>
+          <div class="sdesc">더현대 근처에서 이동. 벽화 구경·포토존. 무료, 24시간. 아이도 재미있는 거리.</div>
+          <div class="smeta"><span class="sm">📍 방천시장 인근</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏮 서문시장 + 야시장</span><span class="sbadge b-tour">전통시장</span></div>
+          <div class="sdesc">대구 최대 전통시장. 낮에는 칼국수·순대, 저녁엔 야시장 먹거리. 화~일 저녁 야시장 운영.</div>
+          <div class="smeta"><span class="sm">📍 서문시장역</span><span class="sm">🚇 3호선 서문시장역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌇 3일차</span>
+      <span class="dtitle">반고개 → 수성못 → 귀가</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦑 반고개오징어회무침</span><span class="sbadge b-food">아침/점심 필수</span></div>
+          <div class="sdesc">대구 오징어회무침 성지. 쫄깃 매콤달콤. 아침 일찍 방문해도 좋아요.</div>
+          <div class="smeta"><span class="sm">📍 반고개역 인근</span><span class="sm">🚇 1호선 반고개역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦢 수성못 유원지</span><span class="sbadge b-tour">공원</span></div>
+          <div class="sdesc">오리 보트 15,000원/30분. 아이와 보트 타기. 주변 카페·산책로. 무료 입장.</div>
+          <div class="smeta"><span class="sm">📍 수성못역</span><span class="sm">🚇 2호선 수성못역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🍱 도마29</span><span class="sbadge b-food">점심</span></div>
+          <div class="sdesc">동성로 연어 스시 맛집. 아이도 좋아하는 초밥·덮밥. 귀가 전 마지막 식사.</div>
+          <div class="smeta"><span class="sm">📍 동성로 내</span><span class="sm">⏰ 11:00~21:00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip"><strong>💡 팁:</strong> 서문시장 야시장은 화~일 저녁(18:00~23:00)만 운영해요. 2일차를 평일로 맞추면 덜 붐벼요. 더현대대구는 오전 10:30 오픈.</div>
+</div>
+
+<!-- ═══════════ PANEL 04 한방+수성 ═══════════ -->
+<div class="panel" id="p3">
+  <div class="ccard">
+    <h2>🌿 코스 04 — 한방체험 + 수성못 힐링</h2>
+    <p class="cd">아이에게 특별한 체험을 선사하는 코스. 한방 족욕·약령시장 체험과 수성못 보트 타기, 이월드까지 다양한 경험을 담았어요.</p>
+    <div class="tags">
+      <span class="ctag hi">★ 필수 4곳 포함</span>
+      <span class="ctag">체험 위주</span><span class="ctag">힐링</span><span class="ctag">아이 체험</span>
+    </div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌅 1일차</span>
+      <span class="dtitle">약령시 체험 → 청라언덕 → 왕거미</span>
+    </div>
+    <div class="spots">
+      <div class="spot">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🌿 대구 약령시장</span><span class="sbadge b-tour">관광</span></div>
+          <div class="sdesc">300년 역사 한약재 골목. 아이에게 한국 전통 시장 문화 체험. 무료 입장. 월요일 휴무.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 도보 5분</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">💆 한방의료체험타운</span><span class="sbadge b-play">체험</span></div>
+          <div class="sdesc">한방 족욕 5,000원. 인바디·발 마사지 체험. 아이도 신기해하는 한의학 공간.</div>
+          <div class="smeta"><span class="sm">📍 약령시장 내</span><span class="sm">💰 족욕 5,000원</span><span class="sm">⏰ 화~일 10:00~17:30</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🌳 청라언덕</span><span class="sbadge b-tour">관광</span></div>
+          <div class="sdesc">선교사 가옥·90계단·3.1운동 역사. 아이와 오후 산책. 무료.</div>
+          <div class="smeta"><span class="sm">📍 약령시장 도보</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">4</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🕷️ 왕거미식당</span><span class="sbadge b-food">저녁 필수</span></div>
+          <div class="sdesc">안지랑 막창골목의 대표 맛집. 부드러운 막창과 참기름 조합. 오픈 시간 맞춰 입장 권장.</div>
+          <div class="smeta"><span class="sm">📍 안지랑역 5분</span><span class="sm">🚇 2호선 안지랑역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">☀️ 2일차</span>
+      <span class="dtitle">수성못 → 더현대대구 → 서문시장</span>
+    </div>
+    <div class="spots">
+      <div class="spot">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦢 수성못 유원지</span><span class="sbadge b-tour">공원</span></div>
+          <div class="sdesc">오전 일찍 방문해 오리 보트 타기. 대기 없이 여유롭게. 무료 입장.</div>
+          <div class="smeta"><span class="sm">📍 수성못역</span><span class="sm">🚇 2호선 수성못역</span><span class="sm">💰 보트 15,000원</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏬 더현대대구</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">수성못에서 지하철 이동. 점심 + 쇼핑. 아이와 식사·쇼핑 여유롭게.</div>
+          <div class="smeta"><span class="sm">📍 대구역 인근</span><span class="sm">🚇 1호선 대구역</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏮 서문시장</span><span class="sbadge b-tour">전통시장</span></div>
+          <div class="sdesc">오후~저녁 서문시장. 칼국수·야시장 먹거리. 야시장은 화~일 저녁 운영.</div>
+          <div class="smeta"><span class="sm">📍 서문시장역</span><span class="sm">🚇 3호선 서문시장역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌇 3일차</span>
+      <span class="dtitle">반고개 → 이월드 → 귀가</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦑 반고개오징어회무침</span><span class="sbadge b-food">점심 필수</span></div>
+          <div class="sdesc">대구 명물 오징어회무침. 마지막 날 점심으로 대구 맛 마무리.</div>
+          <div class="smeta"><span class="sm">📍 반고개역 인근</span><span class="sm">🚇 1호선 반고개역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🎢 이월드</span><span class="sbadge b-play">놀이공원</span></div>
+          <div class="sdesc">귀가 전 반나절 이월드. 아이 마지막 신나는 추억 만들기. 오전 입장 시 덜 붐벼요.</div>
+          <div class="smeta"><span class="sm">📍 730번 버스 20분</span><span class="sm">⏰ 10:00~21:00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip"><strong>💡 팁:</strong> 한방의료체험타운은 월요일 휴무. 족욕 후 피로 회복이 되니 1일차 오후에 넣으면 왕거미식당 저녁을 더 즐겁게 즐길 수 있어요!</div>
+</div>
+
+<!-- ═══════════ PANEL 05 예술+시장 ═══════════ -->
+<div class="panel" id="p4">
+  <div class="ccard">
+    <h2>🎨 코스 05 — 예술거리 + 전통시장 탐방</h2>
+    <p class="cd">김광석길·청라언덕·서문시장 등 대구의 감성적인 거리와 전통 문화를 아이와 함께 걸으며 즐기는 여유로운 코스예요.</p>
+    <div class="tags">
+      <span class="ctag hi">★ 필수 4곳 포함</span>
+      <span class="ctag">감성 여행</span><span class="ctag">걷기 좋음</span><span class="ctag">문화 체험</span>
+    </div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌅 1일차</span>
+      <span class="dtitle">도착 → 청라언덕 → 김광석길 → 왕거미</span>
+    </div>
+    <div class="spots">
+      <div class="spot">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏛️ 대구 근대역사관</span><span class="sbadge b-tour">박물관</span></div>
+          <div class="sdesc">무료 입장. 일제강점기 건물 활용. 아이 역사 학습 최적. 월요일 휴무.</div>
+          <div class="smeta"><span class="sm">📍 반월당역 도보 10분</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🌳 청라언덕 + 계산성당</span><span class="sbadge b-tour">관광</span></div>
+          <div class="sdesc">선교사 가옥·90계단. 대구 근대 역사 코스 걷기. 무료, 1~2시간 소요.</div>
+          <div class="smeta"><span class="sm">📍 근대역사관 도보</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🎨 김광석 다시그리기 길</span><span class="sbadge b-tour">벽화거리</span></div>
+          <div class="sdesc">방천시장 옆 350m 벽화골목. 야간이 분위기 최고. 아이도 포토존 재미있어 해요.</div>
+          <div class="smeta"><span class="sm">📍 방천시장 인근</span><span class="sm">🎫 무료 24시간</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">4</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🕷️ 왕거미식당</span><span class="sbadge b-food">저녁 필수</span></div>
+          <div class="sdesc">대구 안지랑 막창골목 전설. 하루 종일 걸은 피로를 달콤한 막창으로 날려버려요.</div>
+          <div class="smeta"><span class="sm">📍 안지랑역 5분</span><span class="sm">🚇 2호선 안지랑역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">☀️ 2일차</span>
+      <span class="dtitle">서문시장 → 약령시 → 더현대대구</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏮 서문시장</span><span class="sbadge b-tour">전통시장</span></div>
+          <div class="sdesc">오전 서문시장 탐방. 칼국수·순대·기름떡볶이 아침 겸 간식. 현지 분위기 물씬.</div>
+          <div class="smeta"><span class="sm">📍 서문시장역</span><span class="sm">🚇 3호선 서문시장역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🌿 대구약령시 한의학박물관</span><span class="sbadge b-tour">박물관</span></div>
+          <div class="sdesc">무료 입장. 허브 족욕 별도 체험. 아이와 한의학 역사 체험. 인터랙티브 전시 多.</div>
+          <div class="smeta"><span class="sm">📍 약령시장 내</span><span class="sm">🎫 무료</span></div>
+        </div>
+      </div>
+      <div class="spot must">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🏬 더현대대구</span><span class="sbadge b-shop">쇼핑</span></div>
+          <div class="sdesc">오후에 더현대대구로 이동. 쇼핑 + 저녁 식사. 아이와 여유로운 백화점 탐방.</div>
+          <div class="smeta"><span class="sm">📍 대구역 인근</span><span class="sm">🚇 1호선 대구역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="dblock">
+    <div class="drow">
+      <span class="dpill">🌇 3일차</span>
+      <span class="dtitle">반고개 → 이월드 → 수성못 → 귀가</span>
+    </div>
+    <div class="spots">
+      <div class="spot must">
+        <div class="snum">1</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦑 반고개오징어회무침</span><span class="sbadge b-food">아침 필수</span></div>
+          <div class="sdesc">이른 아침 방문. 매콤달콤 오징어회무침으로 마지막 날 스타트. 현지인도 줄 서는 곳.</div>
+          <div class="smeta"><span class="sm">📍 반고개역 인근</span><span class="sm">🚇 1호선 반고개역</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">2</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🎢 이월드</span><span class="sbadge b-play">놀이공원</span></div>
+          <div class="sdesc">반나절 이월드로 아이 신나는 마무리. 오전 입장 추천. 83타워 전망대 무료.</div>
+          <div class="smeta"><span class="sm">📍 730번 버스 20분</span></div>
+        </div>
+      </div>
+      <div class="spot">
+        <div class="snum">3</div>
+        <div class="sbody">
+          <div class="stop"><span class="sname">🦢 수성못 산책</span><span class="sbadge b-tour">공원</span></div>
+          <div class="sdesc">귀가 전 수성못 가볍게 산책. 아이스크림 먹으며 여행 마무리. 무료.</div>
+          <div class="smeta"><span class="sm">📍 수성못역</span><span class="sm">🚇 2호선 수성못역</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip"><strong>💡 팁:</strong> 김광석길은 밤 8~9시에 방문하면 조명이 켜져 훨씬 감성적이에요. 1일차 저녁 왕거미 전에 들르거나, 왕거미 후 산책 코스로 연결하면 완벽해요!</div>
+</div>
+
+<script>
+function go(idx, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p' + idx).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo({top: document.querySelector('.nav-wrap').offsetTop - 10, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
